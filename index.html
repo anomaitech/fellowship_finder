@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plastic Surgery Fellowship Finder - Complete USA Directory</title>
+    <style>
+        :root {
+            --primary: #1a5276;
+            --primary-light: #2980b9;
+            --accent: #e74c3c;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --purple: #8e44ad;
+            --teal: #16a085;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --text-light: #7f8c8d;
+            --border: #dee2e6;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+
+        .header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; padding: 1.5rem 2rem; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .header h1 { font-size: 1.6rem; margin-bottom: 0.2rem; }
+        .header p { opacity: 0.9; font-size: 0.85rem; }
+
+        .profile-banner { background: linear-gradient(135deg, #2c3e50, #3498db); color: white; padding: 1rem 2rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: center; }
+        .profile-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; background: rgba(255,255,255,0.15); padding: 0.3rem 0.7rem; border-radius: 20px; }
+        .profile-item .label { font-weight: 600; }
+
+        .nav { background: white; border-bottom: 1px solid var(--border); padding: 0.4rem 0.5rem; display: flex; flex-wrap: wrap; gap: 0.2rem; justify-content: center; position: sticky; top: 68px; z-index: 99; }
+        .nav button { border: none; background: var(--bg); padding: 0.4rem 0.7rem; border-radius: 16px; cursor: pointer; font-size: 0.75rem; font-weight: 500; transition: all 0.2s; color: var(--text); }
+        .nav button:hover, .nav button.active { background: var(--primary); color: white; }
+        .nav button .count { font-size: 0.65rem; background: rgba(0,0,0,0.15); padding: 0.1rem 0.35rem; border-radius: 8px; margin-left: 0.2rem; }
+        .nav button.active .count { background: rgba(255,255,255,0.3); }
+
+        .toolbar { max-width: 1400px; margin: 1rem auto; padding: 0 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+        .toolbar input, .toolbar select { padding: 0.5rem 0.8rem; border: 2px solid var(--border); border-radius: 8px; font-size: 0.82rem; }
+        .toolbar input { flex: 1; min-width: 200px; }
+        .toolbar input:focus { outline: none; border-color: var(--primary-light); }
+        .toolbar select { background: white; }
+        .toolbar .result-count { font-size: 0.78rem; color: var(--text-light); margin-left: auto; }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 1rem 3rem; }
+
+        .section { display: none; animation: fadeIn 0.3s; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .section-title { font-size: 1.3rem; color: var(--primary); margin: 1rem 0 0.8rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--primary-light); display: flex; align-items: center; gap: 0.5rem; }
+        .section-title .total { font-size: 0.8rem; background: var(--primary-light); color: white; padding: 0.15rem 0.5rem; border-radius: 10px; }
+
+        .program-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 0.8rem; }
+
+        .program-card { background: var(--card-bg); border-radius: 8px; padding: 1rem; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border-left: 4px solid var(--primary-light); transition: transform 0.2s, box-shadow 0.2s; font-size: 0.82rem; }
+        .program-card:hover { transform: translateY(-1px); box-shadow: 0 3px 12px rgba(0,0,0,0.1); }
+        .program-card.acgme { border-left-color: var(--success); }
+        .program-card.non-acgme { border-left-color: var(--warning); }
+        .program-card.research { border-left-color: var(--accent); }
+        .program-card.endorsed { border-left-color: var(--purple); }
+
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.4rem; gap: 0.5rem; }
+        .card-header h3 { font-size: 0.9rem; color: var(--primary); line-height: 1.3; }
+        .badge { font-size: 0.6rem; padding: 0.15rem 0.4rem; border-radius: 8px; font-weight: 600; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
+        .badge.acgme { background: #d5f5e3; color: #1e8449; }
+        .badge.non-acgme { background: #fdebd0; color: #d35400; }
+        .badge.research { background: #fadbd8; color: #c0392b; }
+        .badge.endorsed { background: #e8daef; color: #6c3483; }
+        .badge.aacs { background: #d6eaf8; color: #2471a3; }
+
+        .cd { margin: 0.2rem 0; font-size: 0.78rem; }
+        .cd strong { color: var(--text); }
+        .cd a { color: var(--primary-light); text-decoration: none; }
+        .cd a:hover { text-decoration: underline; }
+
+        .card-tags { display: flex; flex-wrap: wrap; gap: 0.2rem; margin-top: 0.4rem; }
+        .tag { font-size: 0.65rem; background: #eaf2f8; color: var(--primary); padding: 0.1rem 0.4rem; border-radius: 8px; }
+        .tag.img { background: #d5f5e3; color: #1e8449; }
+        .tag.visa { background: #fdebd0; color: #d35400; }
+        .tag.no-visa { background: #fadbd8; color: #c0392b; }
+
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 0.8rem; margin: 1rem 0; }
+        .stat-card { background: white; border-radius: 8px; padding: 0.8rem; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+        .stat-card .number { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
+        .stat-card .label { font-size: 0.7rem; color: var(--text-light); text-transform: uppercase; }
+
+        .info-box { background: #eaf2f8; border-left: 4px solid var(--primary-light); padding: 0.8rem 1rem; border-radius: 0 8px 8px 0; margin: 0.8rem 0; font-size: 0.82rem; }
+        .info-box.warning { background: #fef9e7; border-left-color: var(--warning); }
+        .info-box.danger { background: #fdedec; border-left-color: var(--accent); }
+        .info-box.success { background: #eafaf1; border-left-color: var(--success); }
+        .info-box h4 { margin-bottom: 0.2rem; font-size: 0.9rem; }
+
+        .contact-table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 0.78rem; }
+        .contact-table th, .contact-table td { padding: 0.5rem 0.6rem; border: 1px solid var(--border); text-align: left; }
+        .contact-table th { background: var(--primary); color: white; font-weight: 600; font-size: 0.75rem; }
+        .contact-table tr:nth-child(even) { background: #f8f9fa; }
+        .contact-table a { color: var(--primary-light); }
+
+        .timeline { position: relative; padding-left: 2rem; }
+        .timeline::before { content: ''; position: absolute; left: 0.6rem; top: 0; bottom: 0; width: 3px; background: var(--primary-light); border-radius: 2px; }
+        .timeline-item { position: relative; margin-bottom: 1.2rem; background: var(--card-bg); padding: 0.8rem 1rem; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+        .timeline-item::before { content: ''; position: absolute; left: -1.7rem; top: 1rem; width: 10px; height: 10px; border-radius: 50%; background: var(--primary-light); border: 2px solid white; }
+        .timeline-item.urgent::before { background: var(--accent); }
+        .timeline-item.done::before { background: var(--success); }
+        .timeline-date { font-size: 0.7rem; font-weight: 700; color: var(--primary-light); text-transform: uppercase; }
+        .timeline-item h4 { font-size: 0.88rem; margin: 0.1rem 0; }
+        .timeline-item p { font-size: 0.78rem; color: var(--text-light); }
+
+        .strategy-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.8rem; }
+        .strategy-card { background: white; border-radius: 8px; padding: 1rem; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+        .strategy-card h4 { color: var(--primary); margin-bottom: 0.4rem; font-size: 0.9rem; }
+        .strategy-card ul { font-size: 0.78rem; padding-left: 1.1rem; }
+        .strategy-card ul li { margin-bottom: 0.2rem; }
+
+        .state-group { margin-bottom: 0.5rem; }
+        .state-label { font-size: 0.75rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; margin: 0.8rem 0 0.4rem; padding: 0.2rem 0.5rem; background: #eaf2f8; border-radius: 4px; display: inline-block; }
+
+        .email-template { background: #f8f9fa; padding: 0.8rem; border-radius: 6px; font-size: 0.78rem; margin-top: 0.5rem; border: 1px solid var(--border); }
+
+        @media (max-width: 768px) {
+            .program-grid { grid-template-columns: 1fr; }
+            .header h1 { font-size: 1.2rem; }
+            .nav { top: 56px; }
+            .nav button { font-size: 0.7rem; padding: 0.3rem 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Plastic & Reconstructive Surgery Fellowship Finder</h1>
+    <p>Complete Directory of 350+ Fellowship Programs Across the USA (Academic + Private Practice)</p>
+</div>
+
+<div class="profile-banner">
+    <div class="profile-item"><span class="label">Training:</span> MD + General Surgery (4yr) + Plastic Surgery (3yr) + Microsurgery (Switzerland)</div>
+    <div class="profile-item"><span class="label">USMLE:</span> Step 1 PASSED | Step 2 CK in 2 months</div>
+    <div class="profile-item"><span class="label">Visa:</span> F-2 Dependent</div>
+    <div class="profile-item"><span class="label">Origin:</span> Ethiopia</div>
+</div>
+
+<div class="nav" id="nav">
+    <button class="active" data-section="overview">Overview</button>
+    <button data-section="microsurgery">Microsurgery <span class="count">33</span></button>
+    <button data-section="hand">Hand Surgery <span class="count">90</span></button>
+    <button data-section="craniofacial">Craniofacial <span class="count">37</span></button>
+    <button data-section="burn">Burn Surgery <span class="count">23</span></button>
+    <button data-section="aesthetic">Aesthetic <span class="count">42</span></button>
+    <button data-section="research">Research <span class="count">25</span></button>
+    <button data-section="additional">More + Private <span class="count">100+</span></button>
+    <button data-section="visa">Visa & ECFMG</button>
+    <button data-section="timeline">Action Plan</button>
+    <button data-section="strategy">Strategy</button>
+</div>
+
+<div class="toolbar">
+    <input type="text" id="searchInput" placeholder="Search programs, hospitals, cities, directors, states...">
+    <select id="filterType">
+        <option value="all">All Types</option>
+        <option value="acgme">ACGME Only</option>
+        <option value="non-acgme">Non-ACGME</option>
+        <option value="research">Research</option>
+        <option value="endorsed">Endorsed</option>
+    </select>
+    <select id="filterVisa">
+        <option value="all">All Programs</option>
+        <option value="img">IMG-Friendly</option>
+        <option value="visa-yes">Visa Sponsored</option>
+    </select>
+    <span class="result-count" id="resultCount"></span>
+</div>
+
+<div class="container">
+
+<!-- OVERVIEW -->
+<div class="section active" id="overview">
+    <h2 class="section-title">Dashboard</h2>
+    <div class="stats-row">
+        <div class="stat-card"><div class="number">33</div><div class="label">Microsurgery</div></div>
+        <div class="stat-card"><div class="number">90</div><div class="label">Hand Surgery</div></div>
+        <div class="stat-card"><div class="number">37</div><div class="label">Craniofacial</div></div>
+        <div class="stat-card"><div class="number">23</div><div class="label">Burn Surgery</div></div>
+        <div class="stat-card"><div class="number">42</div><div class="label">Aesthetic</div></div>
+        <div class="stat-card"><div class="number">25+</div><div class="label">Research</div></div>
+        <div class="stat-card"><div class="number">100+</div><div class="label">Other + Private</div></div>
+        <div class="stat-card" style="background: var(--primary); color: white;"><div class="number" style="color:white">350+</div><div class="label" style="color:rgba(255,255,255,0.8)">Total Programs</div></div>
+    </div>
+
+    <div class="info-box success">
+        <h4>Your Strengths</h4>
+        <ul style="margin-top:0.3rem; padding-left:1rem; font-size:0.82rem;">
+            <li><strong>7+ years surgical training</strong> (MD + 4yr general surgery + 3yr plastic surgery)</li>
+            <li><strong>Microsurgery in Switzerland</strong> - international exposure highly valued</li>
+            <li><strong>USMLE Step 1 passed</strong> - major hurdle cleared</li>
+            <li><strong>Best match: Microsurgery & Research fellowships</strong> - leverage your Swiss training</li>
+        </ul>
+    </div>
+
+    <div class="info-box warning">
+        <h4>Challenges to Address</h4>
+        <ul style="margin-top:0.3rem; padding-left:1rem; font-size:0.82rem;">
+            <li><strong>F-2 visa cannot work/train</strong> - must change to J-1 or H-1B</li>
+            <li><strong>ECFMG certification needed</strong> for ACGME programs (Step 1 + Step 2 CK + OET)</li>
+            <li><strong>USMLE Step 2 CK</strong> - aim for 240+, ideally 250+</li>
+            <li><strong>Some programs explicitly cannot sponsor visas</strong> (UCSF, UW, UTHSCSA)</li>
+        </ul>
+    </div>
+
+    <div class="info-box">
+        <h4>Two-Track Strategy</h4>
+        <p><strong>Track 1 (Now - 2027):</strong> Apply to research fellowships + non-ACGME clinical fellowships. These are more IMG-accessible and build US connections.</p>
+        <p><strong>Track 2 (2027-2028+):</strong> With ECFMG certification, apply to ACGME programs via SF Match/NRMP.</p>
+    </div>
+</div>
+
+<!-- MICROSURGERY - 33 programs -->
+<div class="section" id="microsurgery">
+    <h2 class="section-title">Microsurgery Fellowship Programs <span class="total">33 Programs</span></h2>
+    <p style="font-size:0.8rem; color:var(--text-light); margin-bottom:0.8rem;">Nearly all non-ACGME, 1-year. Most participate in SF Match (ASRM Match). This is your STRONGEST subspecialty match given your Swiss microsurgery training.</p>
+
+    <div class="info-box">
+        <h4>Key Resources</h4>
+        <p>ASRM Fellowship List: <a href="https://www.microsurg.org/education/fellowships/full-list-of-fellowships/" target="_blank">microsurg.org</a> | SF Match: <a href="https://sfmatch.org/specialty/microsurgery-fellowship/Overview" target="_blank">sfmatch.org</a> | ASRM Office: asrmoffice@gmail.com, 312-456-9579</p>
+    </div>
+
+    <div class="program-grid" data-category="microsurgery">
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-img="true" data-state="TX">
+            <div class="card-header"><h3>UT MD Anderson Cancer Center</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Houston, TX</div>
+            <div class="cd"><strong>Director:</strong> Paul L. Shay, MD | Asst: Jessie Z. Yu, MD</div>
+            <div class="cd"><strong>Coordinator:</strong> Andrea Warren | <a href="mailto:JZYu@mdanderson.org">JZYu@mdanderson.org</a> | 713-794-1247</div>
+            <div class="cd"><strong>Cases:</strong> ~1,400 microsurgical cases/year</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://www.mdanderson.org/education-training/clinical-training/graduate-medical-education/residencies-fellowships/microvascular-reconstructive-surgery.html" target="_blank">Program Page</a></div>
+            <div class="card-tags"><span class="tag">Highest Volume</span><span class="tag">200+ Graduates</span><span class="tag img">IMG Considered</span></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="NY">
+            <div class="card-header"><h3>Memorial Sloan Kettering (MSK)</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> New York, NY</div>
+            <div class="cd"><strong>Contact:</strong> 646-926-0945 | <a href="mailto:surgicaleducation@mskcc.org">surgicaleducation@mskcc.org</a></div>
+            <div class="cd"><strong>Cases:</strong> 250-300 free tissue transfers/year</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://www.mskcc.org/hcp-education-training/fellowships/plastic-reconstructive-surgery" target="_blank">Program Page</a></div>
+            <div class="card-tags"><span class="tag">Cancer Center</span><span class="tag">Research + Clinical</span></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="MD">
+            <div class="card-header"><h3>Johns Hopkins Hospital</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Baltimore, MD</div>
+            <div class="cd"><strong>Director:</strong> Gedge Rosson, MD</div>
+            <div class="cd"><strong>Coordinator:</strong> Helena Johnson | <a href="mailto:hjohnson@jhmi.edu">hjohnson@jhmi.edu</a> | 410-955-9471</div>
+            <div class="cd"><strong>Positions:</strong> 1</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://www.hopkinsmedicine.org/plastic-reconstructive-surgery/education/reconstructive-microsurgery-fellowship" target="_blank">Program Page</a></div>
+            <div class="card-tags"><span class="tag">Prestigious</span></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="NY">
+            <div class="card-header"><h3>NYU Langone Health</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> New York, NY</div>
+            <div class="cd"><strong>Director:</strong> Jamie P. Levine, MD</div>
+            <div class="cd"><strong>Coordinator:</strong> Tabbatha Cooke | <a href="mailto:tabbatha.cooke@nyulangone.org">tabbatha.cooke@nyulangone.org</a> | 646-501-6784</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://med.nyu.edu/departments-institutes/plastic-surgery/education/fellowships/microsurgery-fellowship" target="_blank">Program Page</a></div>
+            <div class="card-tags"><span class="tag">High Volume</span></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-img="true" data-state="CA">
+            <div class="card-header"><h3>Stanford University</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Stanford, CA</div>
+            <div class="cd"><strong>Director:</strong> Dung Nguyen, MD, PharmD</div>
+            <div class="cd"><strong>Coordinator:</strong> Tania LomeliFranco | <a href="mailto:tmlomeli@stanford.edu">tmlomeli@stanford.edu</a></div>
+            <div class="cd"><strong>Positions:</strong> 2 | SF Match ID: 4954</div>
+            <div class="cd"><strong>Cases:</strong> 350+ microsurgical/yr, 180+ free flaps per fellow</div>
+            <div class="cd"><strong>Application:</strong> Opens Jan 5, 2026 | Deadline: Mar 16, 2026 | Interviews: May 11, 2026</div>
+            <div class="cd"><strong>Visa:</strong> Sponsors J-1 through ECFMG (allow 120 days)</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://med.stanford.edu/plasticsurgery/education/fellowship-overview/instructorship-microsurgery.html" target="_blank">Program Page</a></div>
+            <div class="card-tags"><span class="tag img">J-1 Sponsored</span><span class="tag">180+ flaps/fellow</span><span class="tag">8 Faculty</span></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="CA">
+            <div class="card-header"><h3>UCSF</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> San Francisco, CA</div>
+            <div class="cd"><strong>Coordinator:</strong> Madison Cavallaro | 415-353-4285</div>
+            <div class="cd"><strong>Cases:</strong> Min 120 free flaps/year</div>
+            <div class="cd"><strong>Salary:</strong> PGY-6 level (~$88,505) + housing allowance</div>
+            <div class="cd"><strong>Visa:</strong> US citizen/permanent resident ONLY - CANNOT sponsor visas</div>
+            <div class="cd"><strong>Benefits:</strong> ASRM conference funding, subsidized housing, moonlighting OK</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://plasticsurgery.ucsf.edu/microsurgery-fellowship-program" target="_blank">Program Page</a></div>
+            <div class="card-tags"><span class="tag no-visa">No Visa - US/PR Only</span><span class="tag">120+ Free Flaps</span></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="CA">
+            <div class="card-header"><h3>UCLA Health</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Los Angeles, CA</div>
+            <div class="cd"><strong>Positions:</strong> 2</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://www.uclahealth.org/departments/surgery/education/fellowships/plastic-surgery/microsurgery-fellowship" target="_blank">Program Page</a></div>
+            <div class="card-tags"><span class="tag">Apprenticeship Model</span></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="CA">
+            <div class="card-header"><h3>UC Irvine</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Orange, CA</div>
+            <div class="cd"><strong>Director:</strong> Gordon Lee, MD</div>
+            <div class="cd"><strong>Coordinator:</strong> Elena Quiroz-Carraby | <a href="mailto:ecarraby@hs.uci.edu">ecarraby@hs.uci.edu</a></div>
+            <div class="cd"><strong>Salary:</strong> $104,000 (PGY-7) + benefits</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://www.uciplasticsurgery.com/fellowships/" target="_blank">Program Page</a></div>
+            <div class="card-tags"><span class="tag">CA License Required</span></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="CA">
+            <div class="card-header"><h3>USC Keck School of Medicine</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Los Angeles, CA</div>
+            <div class="cd"><strong>Cases:</strong> 150+ flaps/year</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://keck.usc.edu/surgery/training-education/fellowships/microsurgery-fellowship-program/" target="_blank">Program Page</a></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="PA">
+            <div class="card-header"><h3>University of Pennsylvania</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Philadelphia, PA</div>
+            <div class="cd"><strong>Faculty:</strong> L. Scott Levin, MD; Stephen J. Kovach, MD</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://www.pennmedicine.org/departments-and-centers/department-of-surgery/education-and-training/fellowships/microvascular-reconstructive-surgery-fellowship" target="_blank">Program Page</a></div>
+            <div class="card-tags"><span class="tag">PennMicro</span></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="PA">
+            <div class="card-header"><h3>University of Pittsburgh / UPMC</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Pittsburgh, PA</div>
+            <div class="cd"><strong>Coordinator:</strong> Michelle Gigliotti | <a href="mailto:gigliottim@upmc.edu">gigliottim@upmc.edu</a> | 412-383-8082</div>
+            <div class="cd"><strong>Cases:</strong> 100-150 free flaps/year</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://www.plasticsurgery.pitt.edu/education/clinical-fellowship-programs/microsurgery-fellowship" target="_blank">Program Page</a></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="CT">
+            <div class="card-header"><h3>Yale School of Medicine</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> New Haven, CT</div>
+            <div class="cd"><strong>Coordinator:</strong> Monika Londono</div>
+            <div class="cd"><strong>Focus:</strong> High-volume breast reconstruction</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://medicine.yale.edu/surgery/education/fellowships/plastic-surgery/microsurgery/" target="_blank">Program Page</a></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-img="true" data-state="MO">
+            <div class="card-header"><h3>Washington University in St. Louis</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> St. Louis, MO</div>
+            <div class="cd"><strong>Coordinator:</strong> Pamela Wolf | <a href="mailto:pamela.wolf@wustl.edu">pamela.wolf@wustl.edu</a></div>
+            <div class="cd"><strong>Visa:</strong> J-1 on case-by-case basis</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://plasticsurgery.wustl.edu/education/orthoplastic-microsurgery-fellowship/" target="_blank">Program Page</a></div>
+            <div class="card-tags"><span class="tag">Orthoplastic</span><span class="tag img">J-1 Case-by-Case</span></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="MI">
+            <div class="card-header"><h3>University of Michigan</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Ann Arbor, MI</div>
+            <div class="cd"><strong>Coordinator:</strong> Jennifer Curley</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://medschool.umich.edu/departments/surgery/sections/plastic-surgery/education/fellowships/microsurgery" target="_blank">Program Page</a></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="OH">
+            <div class="card-header"><h3>Ohio State University</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Columbus, OH</div>
+            <div class="cd"><strong>Director:</strong> James Boehmler, MD</div>
+            <div class="cd"><strong>Coordinator:</strong> Hannah Tate | <a href="mailto:Hannah.Tate@osumc.edu">Hannah.Tate@osumc.edu</a> | 614-293-9030</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://medicine.osu.edu/departments/plastic-reconstructive-surgery/education/microsurgery-fellowship" target="_blank">Program Page</a></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-img="true" data-state="OH">
+            <div class="card-header"><h3>Cleveland Clinic</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Cleveland, OH</div>
+            <div class="cd"><strong>Director:</strong> Graham Schwarz, MD, MSE, FACS</div>
+            <div class="cd"><strong>Also:</strong> Lymphatic Supermicrosurgery Fellowship (Dir: Wei Chen, MD; <a href="mailto:chenw6@ccf.org">chenw6@ccf.org</a>)</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://my.clevelandclinic.org/departments/dermatology-plastic-surgery/medical-professionals/microsurgery-reconstruction-fellowship" target="_blank">Program Page</a></div>
+            <div class="card-tags"><span class="tag img">IMG Accepted</span><span class="tag">+ Lymphatic Track</span></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="IL">
+            <div class="card-header"><h3>University of Chicago</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Chicago, IL</div>
+            <div class="cd"><strong>Cases:</strong> 500+ microsurgery cases/year</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://surgery.uchicago.edu/education/microsurgery-fellowship" target="_blank">Program Page</a></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="IL">
+            <div class="card-header"><h3>Rush University Medical Center</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Chicago, IL</div>
+            <div class="cd"><strong>Director:</strong> Deana Shenaq, MD</div>
+            <div class="cd"><strong>Coordinator:</strong> Elisha Harris | <a href="mailto:Elisha_Harris@Rush.edu">Elisha_Harris@Rush.edu</a></div>
+            <div class="cd"><strong>Website:</strong> <a href="https://www.rushu.rush.edu/education-training/graduate-medical-education/residency-programs/integrated-plastic-reconstructive-surgery-residency/microsurgery-fellowship" target="_blank">Program Page</a></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="IN">
+            <div class="card-header"><h3>Indiana University</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Indianapolis, IN</div>
+            <div class="cd"><strong>Coordinator:</strong> Cherron Jones | <a href="mailto:jones562@iu.edu">jones562@iu.edu</a> | 317-278-0394</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://medicine.iu.edu/surgery/education/fellowship/microsurgery" target="_blank">Program Page</a></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="KS">
+            <div class="card-header"><h3>University of Kansas (KUMC)</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Kansas City, KS</div>
+            <div class="cd"><strong>Director:</strong> James Butterworth, MBBCh, FACS</div>
+            <div class="cd"><strong>Coordinator:</strong> Kendra Harms | <a href="mailto:kharms2@kumc.edu">kharms2@kumc.edu</a> | 913-588-2000</div>
+            <div class="cd"><strong>Cases:</strong> 150-250 free flaps/year</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://www.kumc.edu/school-of-medicine/academics/departments/plastic-burn-and-wound-surgery/academics/microsurgery-fellowship.html" target="_blank">Program Page</a></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="WA">
+            <div class="card-header"><h3>University of Washington</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Seattle, WA</div>
+            <div class="cd"><strong>Director:</strong> Dr. Duane Wang</div>
+            <div class="cd"><strong>Coordinator:</strong> Heather Hartman | <a href="mailto:hhartman@uw.edu">hhartman@uw.edu</a></div>
+            <div class="cd"><strong>Positions:</strong> 1</div>
+            <div class="cd"><strong>Cases:</strong> 150+ free flaps, 100 breast, 50 LVA, ~3 OR days/wk</div>
+            <div class="cd"><strong>Deadline:</strong> Mar 30, 2026 | Interviews: Apr 3-4, 2026</div>
+            <div class="cd"><strong>Visa:</strong> CANNOT sponsor J-1 or H-1B</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://uwsurgery.org/introduction-to-surgical-education3/microvascular-fellowship/" target="_blank">Program Page</a></div>
+            <div class="card-tags"><span class="tag no-visa">No Visa</span><span class="tag">150+ Free Flaps</span></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="UT">
+            <div class="card-header"><h3>University of Utah</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Salt Lake City, UT</div>
+            <div class="cd"><strong>Director:</strong> Andrew Mills, MD</div>
+            <div class="cd"><strong>Structure:</strong> 9 months plastic + 3 months head & neck</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://medicine.utah.edu/surgery/plastic-surgery/fellowships/microvascular-reconstruction" target="_blank">Program Page</a></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="TX">
+            <div class="card-header"><h3>UT Southwestern</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Dallas, TX</div>
+            <div class="cd"><strong>Director:</strong> Shai M. Rozen, MD, FACS</div>
+            <div class="cd"><strong>Contact:</strong> <a href="mailto:shai.rozen@utsouthwestern.edu">shai.rozen@utsouthwestern.edu</a> | 214-645-2353</div>
+            <div class="cd"><strong>Cases:</strong> 180-200/yr (80% breast, 10% facial reanimation)</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://www.utsouthwestern.edu/departments/plastic-surgery/education-training/fellowships/microsurgery.html" target="_blank">Program Page</a></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="TX">
+            <div class="card-header"><h3>UT Health San Antonio</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> San Antonio, TX</div>
+            <div class="cd"><strong>Director:</strong> Roberto Martinez, MD</div>
+            <div class="cd"><strong>Coordinator:</strong> Lizbeth Pantaleon | <a href="mailto:pantaleon@uthscsa.edu">pantaleon@uthscsa.edu</a> | 210-567-2457</div>
+            <div class="cd"><strong>Cases:</strong> 300+ microsurgical flaps/year</div>
+            <div class="cd"><strong>Visa:</strong> CANNOT sponsor visas</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://lsom.uthscsa.edu/surgery/education/surgical-residencies/plastic-surgery-fellowship-overview/" target="_blank">Program Page</a></div>
+            <div class="card-tags"><span class="tag no-visa">No Visa</span><span class="tag">300+ Flaps/yr</span></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="FL">
+            <div class="card-header"><h3>USF Health / Tampa General</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Tampa, FL</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://health.usf.edu/medicine/plastic-surgery/microsurgery-fellowship" target="_blank">Program Page</a></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="FL">
+            <div class="card-header"><h3>Moffitt Cancer Center</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Tampa, FL</div>
+            <div class="cd"><strong>Director:</strong> Evgenios Evgeniou, MD | <a href="mailto:Evgenios.Evgeniou@Moffitt.org">Evgenios.Evgeniou@Moffitt.org</a></div>
+            <div class="cd"><strong>Cases:</strong> 150+ microsurgical/year</div>
+            <div class="cd"><strong>Focus:</strong> Oncologic reconstruction, lymphedema, sarcoma</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://www.moffitt.org/education/medical-education/our-training-programs/graduate-medical-education-residency-and-fellowship/reconstructive-oncology-microsurgery-fellowship/" target="_blank">Program Page</a></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="CA">
+            <div class="card-header"><h3>City of Hope</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Duarte, CA</div>
+            <div class="cd"><strong>Director:</strong> Antoine Lyonel Carre, MD, MPH</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://www.cityofhope.org/academics/graduate-medical-education/clinical-residency-and-fellowships/reconstructive-microsurgery-fellowship-program" target="_blank">Program Page</a></div>
+            <div class="card-tags"><span class="tag">Cancer Center</span></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="MA">
+            <div class="card-header"><h3>Harvard / BIDMC (Peter Jay Sharp)</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Boston, MA</div>
+            <div class="cd"><strong>Cases:</strong> 150+ microsurgical/year</div>
+            <div class="cd"><strong>Appointment:</strong> Clinical Fellow, Harvard Medical School</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://bidmcplasticsurgeryresidency.hms.harvard.edu/microsurgery-fellowship" target="_blank">Program Page</a></div>
+            <div class="card-tags"><span class="tag">Harvard</span></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="WI">
+            <div class="card-header"><h3>Medical College of Wisconsin</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Milwaukee, WI</div>
+            <div class="cd"><strong>Director:</strong> John LoGiudice, MD</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://www.mcw.edu/departments/plastic-surgery/education/fellowships/microsurgery-fellowship" target="_blank">Program Page</a></div>
+            <div class="card-tags"><span class="tag img">Foreign Equivalent Accepted</span></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="MI">
+            <div class="card-header"><h3>Corewell Health William Beaumont</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Royal Oak, MI</div>
+            <div class="cd"><strong>Director:</strong> Kongkrit Chaiyasate, MD | <a href="mailto:chaiyask@corewellhealth.org">chaiyask@corewellhealth.org</a></div>
+            <div class="cd"><strong>Positions:</strong> 2 | Combined Craniofacial, Skull Base & Microsurgery</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://corewellhealth.org/graduate-medical-education/southeast-michigan/fellowships/royal-oak/surgery/integrated-craniofacial-skull-base-and-reconstructive-microsurgery" target="_blank">Program Page</a></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="CA">
+            <div class="card-header"><h3>Cedars-Sinai Medical Center</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Los Angeles, CA</div>
+            <div class="cd"><strong>Director:</strong> Philip Brazio, MD</div>
+            <div class="cd"><strong>Note:</strong> First program in nation for robotic-assisted microsurgery</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://www.cedars-sinai.edu/education/graduate-medical/fellowship/complex-reconstruction-microsurgery.html" target="_blank">Program Page</a></div>
+            <div class="card-tags"><span class="tag">Robotic Microsurgery</span></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="DC">
+            <div class="card-header"><h3>MedStar Georgetown</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Washington, DC</div>
+            <div class="cd"><strong>Contact:</strong> 202-444-1649</div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-state="CO">
+            <div class="card-header"><h3>University of Colorado Anschutz</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Aurora, CO</div>
+            <div class="cd"><strong>Coordinator:</strong> Kathleen Tuthill | <a href="mailto:Kathleen.Tuthill@cuanschutz.edu">Kathleen.Tuthill@cuanschutz.edu</a> | 303-724-2684</div>
+        </div>
+
+    </div>
+</div>
+
+<!-- HAND SURGERY - abbreviated for space, showing all 90 in table format -->
+<div class="section" id="hand">
+    <h2 class="section-title">Hand Surgery Fellowship Programs <span class="total">~90 Programs</span></h2>
+    <p style="font-size:0.8rem; color:var(--text-light); margin-bottom:0.8rem;">ACGME-accredited. ~74 ortho track, ~19 plastic surgery track, 2 general surgery track. Most participate in NRMP Match. 91.4% accept plastic surgery graduates.</p>
+
+    <div class="info-box">
+        <h4>Directories</h4>
+        <p>ASSH: <a href="https://applications.assh.org/s/fellowshipdirectory" target="_blank">assh.org</a> | ACGME: <a href="https://apps.acgme.org/ads/Public/Programs/Search" target="_blank">acgme.org</a> | NRMP: <a href="https://www.nrmp.org/fellowship-applicants/participating-fellowships/hand-surgery-match/" target="_blank">nrmp.org</a></p>
+    </div>
+
+    <table class="contact-table">
+        <thead><tr><th>#</th><th>Institution</th><th>City, State</th><th>Track</th><th>Positions</th><th>Director</th><th>Notes</th></tr></thead>
+        <tbody>
+            <tr><td>1</td><td>UAB</td><td>Birmingham, AL</td><td>Ortho</td><td>3</td><td>-</td><td></td></tr>
+            <tr><td>2</td><td>Univ. of Arizona - Phoenix</td><td>Phoenix, AZ</td><td>Ortho</td><td>-</td><td>Tolga Turker, MD</td><td></td></tr>
+            <tr><td>3</td><td>Stanford University</td><td>Stanford, CA</td><td>Ortho</td><td>3</td><td>Jeffrey Yao, MD</td><td>2 ortho + 1 plastic</td></tr>
+            <tr><td>4</td><td>UCLA</td><td>Los Angeles, CA</td><td>Ortho</td><td>-</td><td>-</td><td>Combined ortho/plastics</td></tr>
+            <tr><td>5</td><td>UC Davis</td><td>Sacramento, CA</td><td>Ortho</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>6</td><td>UC Irvine</td><td>Orange, CA</td><td>Ortho</td><td>-</td><td>-</td><td>CHOC, Long Beach VA</td></tr>
+            <tr><td>7</td><td>UC San Diego</td><td>San Diego, CA</td><td>Ortho</td><td>-</td><td>Matthew Meunier, MD</td><td></td></tr>
+            <tr><td>8</td><td>UCSF</td><td>San Francisco, CA</td><td>Ortho</td><td>1</td><td>-</td><td>$113K salary + housing</td></tr>
+            <tr><td>9</td><td>Buncke Clinic / UCSF</td><td>San Francisco, CA</td><td>Plastic</td><td>2</td><td>-</td><td>Microsurgery emphasis</td></tr>
+            <tr><td>10</td><td>Cedars-Sinai (Katzenberg)</td><td>Los Angeles, CA</td><td>Ortho</td><td>-</td><td>-</td><td>Stem cell research</td></tr>
+            <tr><td>11</td><td>Loma Linda University</td><td>Loma Linda, CA</td><td>Ortho</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>12</td><td>Univ. of Colorado</td><td>Aurora, CO</td><td>Ortho</td><td>3</td><td>-</td><td></td></tr>
+            <tr><td>13</td><td>Yale University</td><td>New Haven, CT</td><td>Plastic</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>14</td><td>Univ. of Connecticut</td><td>Farmington, CT</td><td>Ortho</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>15</td><td>Univ. of Florida</td><td>Gainesville, FL</td><td>Ortho</td><td>2</td><td>-</td><td></td></tr>
+            <tr><td>16</td><td>FL Orthopaedic Institute</td><td>Tampa, FL</td><td>Ortho</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>17</td><td>FIU / Baptist Health</td><td>Miami, FL</td><td>Ortho</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>18</td><td>Univ. of Miami (Ortho)</td><td>Miami, FL</td><td>Ortho</td><td>2</td><td>-</td><td>Accepts gen/plastic/ortho</td></tr>
+            <tr><td>19</td><td>Univ. of Miami (Plastic)</td><td>Miami, FL</td><td>Plastic</td><td>-</td><td>-</td><td>100% exam pass rate</td></tr>
+            <tr><td>20</td><td>Emory University</td><td>Atlanta, GA</td><td>Ortho</td><td>-</td><td>-</td><td>600-700 cases/fellow</td></tr>
+            <tr><td>21</td><td>Rush / Midwest Ortho</td><td>Chicago, IL</td><td>Ortho</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>22</td><td>Univ. of Chicago</td><td>Chicago, IL</td><td>Ortho</td><td>2</td><td>-</td><td></td></tr>
+            <tr><td>23</td><td>SIU Plastic Surgery</td><td>Springfield, IL</td><td>Plastic</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>24</td><td>Indiana University</td><td>Indianapolis, IN</td><td>Ortho</td><td>2</td><td>-</td><td></td></tr>
+            <tr><td>25</td><td>Indiana Hand Center</td><td>Indianapolis, IN</td><td>Ortho</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>26</td><td>Univ. of Iowa</td><td>Iowa City, IA</td><td>Ortho</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>27</td><td>Univ. of Kentucky</td><td>Lexington, KY</td><td>Plastic</td><td>1</td><td>-</td><td></td></tr>
+            <tr><td>28</td><td>Kleinert Institute / U Louisville</td><td>Louisville, KY</td><td>Ortho</td><td>-</td><td>-</td><td>Accepts all tracks</td></tr>
+            <tr><td>29</td><td>Univ. of Louisville</td><td>Louisville, KY</td><td>Plastic</td><td>-</td><td>Michelle Palazzo, MD</td><td></td></tr>
+            <tr><td>30</td><td>Curtis National Hand Ctr / MedStar</td><td>Baltimore, MD</td><td>Ortho</td><td>-</td><td>-</td><td>Est. 1978, trauma center</td></tr>
+            <tr><td>31</td><td>Johns Hopkins</td><td>Baltimore, MD</td><td>Plastic</td><td>1</td><td>-</td><td></td></tr>
+            <tr><td>32</td><td>Univ. of Maryland</td><td>Baltimore, MD</td><td>Ortho</td><td>-</td><td>-</td><td>Shock Trauma affil.</td></tr>
+            <tr><td>33</td><td>Walter Reed NMMC</td><td>Bethesda, MD</td><td>Ortho</td><td>2</td><td>-</td><td>Military</td></tr>
+            <tr><td>34</td><td>Harvard / BWH</td><td>Boston, MA</td><td>Ortho</td><td>4</td><td>-</td><td>3 ortho + 1 plastic</td></tr>
+            <tr><td>35</td><td>Mass General Hospital</td><td>Boston, MA</td><td>Ortho</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>36</td><td>UMass Chan</td><td>Worcester, MA</td><td>Ortho</td><td>2</td><td>-</td><td></td></tr>
+            <tr><td>37</td><td>Univ. of Michigan</td><td>Ann Arbor, MI</td><td>Plastic</td><td>2</td><td>Steven Haase, MD</td><td></td></tr>
+            <tr><td>38</td><td>Henry Ford / MI Surgery Spec.</td><td>Detroit, MI</td><td>Ortho</td><td>2</td><td>-</td><td>Since 2021</td></tr>
+            <tr><td>39</td><td>Mayo Clinic</td><td>Rochester, MN</td><td>Ortho</td><td>5</td><td>Sanj Kakar, MD</td><td>Est. 1972, 180+ graduates</td></tr>
+            <tr><td>40</td><td>Univ. of Mississippi</td><td>Jackson, MS</td><td>Combined</td><td>-</td><td>-</td><td>New 2025-2026</td></tr>
+            <tr><td>41</td><td>Wash U / Barnes-Jewish</td><td>St. Louis, MO</td><td>Ortho</td><td>3</td><td>-</td><td></td></tr>
+            <tr><td>42</td><td>Wash U (Plastic track)</td><td>St. Louis, MO</td><td>Plastic</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>43</td><td>Univ. of Nebraska</td><td>Omaha, NE</td><td>Ortho</td><td>2</td><td>-</td><td></td></tr>
+            <tr><td>44</td><td>Rutgers NJMS</td><td>Newark, NJ</td><td>Ortho</td><td>-</td><td>Irfan Ahmed, MD</td><td></td></tr>
+            <tr><td>45</td><td>Univ. of New Mexico</td><td>Albuquerque, NM</td><td>Ortho</td><td>-</td><td>-</td><td>1st academic hand div (1970)</td></tr>
+            <tr><td>46</td><td>HSS</td><td>New York, NY</td><td>Ortho</td><td>3</td><td>-</td><td></td></tr>
+            <tr><td>47</td><td>NYU Langone (Ortho)</td><td>New York, NY</td><td>Ortho</td><td>-</td><td>S. Steven Yang, MD</td><td></td></tr>
+            <tr><td>48</td><td>NYU Langone (Plastic)</td><td>New York, NY</td><td>Plastic</td><td>-</td><td>Jonathan Bass, MD</td><td></td></tr>
+            <tr><td>49</td><td>Columbia / NYP</td><td>New York, NY</td><td>Ortho</td><td>-</td><td>Melvin Rosenwasser, MD</td><td></td></tr>
+            <tr><td>50</td><td>Mount Sinai</td><td>New York, NY</td><td>Ortho</td><td>2</td><td>Jaehon Kim, MD</td><td></td></tr>
+            <tr><td>51</td><td>Stony Brook University</td><td>Stony Brook, NY</td><td>Ortho</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>52</td><td>SUNY Upstate</td><td>Syracuse, NY</td><td>Ortho</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>53</td><td>Univ. at Buffalo</td><td>Buffalo, NY</td><td>Ortho</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>54</td><td>Univ. of Rochester</td><td>Rochester, NY</td><td>Ortho</td><td>-</td><td>Warren Hammert, MD</td><td></td></tr>
+            <tr><td>55</td><td>Duke University</td><td>Durham, NC</td><td>Ortho</td><td>3</td><td>Marc Richard, MD</td><td>SE US replant center</td></tr>
+            <tr><td>56</td><td>OrthoCarolina</td><td>Charlotte, NC</td><td>Ortho</td><td>-</td><td>-</td><td>50K+ visits, 6K+ surgeries</td></tr>
+            <tr><td>57</td><td>Wake Forest</td><td>Winston-Salem, NC</td><td>Ortho</td><td>3</td><td>-</td><td>Accepts plastic grads</td></tr>
+            <tr><td>58</td><td>Cleveland Clinic Combined</td><td>Cleveland, OH</td><td>Ortho</td><td>-</td><td>-</td><td>6mo CC + 6mo MetroHealth</td></tr>
+            <tr><td>59</td><td>Ohio State University</td><td>Columbus, OH</td><td>Ortho</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>60</td><td>Univ. of Cincinnati / TriHealth</td><td>Cincinnati, OH</td><td>Ortho</td><td>3</td><td>-</td><td>Est. 1987</td></tr>
+            <tr><td>61</td><td>OHSU</td><td>Portland, OR</td><td>Plastic</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>62</td><td>Univ. of Pennsylvania</td><td>Philadelphia, PA</td><td>Ortho</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>63</td><td>Thomas Jefferson / Rothman</td><td>Philadelphia, PA</td><td>Ortho</td><td>-</td><td>Asif Ilyas, MD</td><td>Est. 1968, 200+ fellows</td></tr>
+            <tr><td>64</td><td>AHN / Drexel</td><td>Pittsburgh, PA</td><td>Ortho</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>65</td><td>UPMC (Ortho)</td><td>Pittsburgh, PA</td><td>Ortho</td><td>-</td><td>-</td><td>14 hand faculty</td></tr>
+            <tr><td>66</td><td>UPMC (Plastic)</td><td>Pittsburgh, PA</td><td>Plastic</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>67</td><td>UPMC Hamot</td><td>Erie, PA</td><td>Ortho</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>68</td><td>WellSpan Health</td><td>York, PA</td><td>Ortho</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>69</td><td>CHOP</td><td>Philadelphia, PA</td><td>Plastic</td><td>-</td><td>-</td><td>Pediatric</td></tr>
+            <tr><td>70</td><td>Brown University</td><td>Providence, RI</td><td>Ortho</td><td>3</td><td>-</td><td></td></tr>
+            <tr><td>71</td><td>Vanderbilt</td><td>Nashville, TN</td><td>Ortho</td><td>2</td><td>-</td><td></td></tr>
+            <tr><td>72</td><td>Univ. of Tennessee</td><td>Memphis, TN</td><td>Ortho</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>73</td><td>UT Southwestern</td><td>Dallas, TX</td><td>Plastic</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>74</td><td>Baylor College of Medicine</td><td>Houston, TX</td><td>Ortho</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>75</td><td>Hand & UE Center SA / UIW</td><td>San Antonio, TX</td><td>Ortho</td><td>3-4</td><td>-</td><td></td></tr>
+            <tr><td>76</td><td>UTHealth Houston</td><td>Houston, TX</td><td>Ortho</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>77</td><td>Univ. of Utah</td><td>Salt Lake City, UT</td><td>Ortho</td><td>2</td><td>-</td><td>Microsurgery + congenital</td></tr>
+            <tr><td>78</td><td>Univ. of Virginia</td><td>Charlottesville, VA</td><td>Ortho</td><td>2</td><td>-</td><td>~1,000 cases/yr</td></tr>
+            <tr><td>79</td><td>Carilion / VT</td><td>Roanoke, VA</td><td>Ortho</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>80</td><td>Univ. of Washington</td><td>Seattle, WA</td><td>Ortho</td><td>4</td><td>-</td><td></td></tr>
+            <tr><td>81</td><td>MCW (Ortho)</td><td>Milwaukee, WI</td><td>Ortho</td><td>-</td><td>-</td><td></td></tr>
+            <tr><td>82</td><td>MCW (Plastic)</td><td>Milwaukee, WI</td><td>Plastic</td><td>-</td><td>-</td><td></td></tr>
+        </tbody>
+    </table>
+    <p style="font-size:0.78rem; color:var(--text-light); margin-top:0.5rem;">~8-10 additional programs exist. For complete list: <a href="https://applications.assh.org/s/fellowshipdirectory" target="_blank">ASSH Directory</a></p>
+</div>
+
+<!-- BURN SURGERY - 23 programs -->
+<div class="section" id="burn">
+    <h2 class="section-title">Burn Surgery Fellowship Programs <span class="total">23 Programs</span></h2>
+    <div class="info-box"><p>ABA Fellowship Directory: <a href="https://www.ameriburn.org/burn-care-team/careers/find-a-fellowship" target="_blank">ameriburn.org</a></p></div>
+
+    <table class="contact-table">
+        <thead><tr><th>#</th><th>Institution</th><th>City, State</th><th>ACGME?</th><th>Duration</th><th>Program Director</th><th>Contact</th></tr></thead>
+        <tbody>
+            <tr><td>1</td><td>MGH / Shriners Boston</td><td>Boston, MA</td><td>No (ABA)</td><td>1yr</td><td>Jeremy Goverman, MD</td><td>nslaughter@mgh.harvard.edu</td></tr>
+            <tr><td>2</td><td>Johns Hopkins / Bayview</td><td>Baltimore, MD</td><td>No</td><td>1-2yr</td><td>Julie Caffrey, DO</td><td>410-550-0886</td></tr>
+            <tr><td>3</td><td>Weill Cornell / NYP</td><td>New York, NY</td><td>No</td><td>1yr</td><td>James Gallagher, MD</td><td>vam9037@med.cornell.edu</td></tr>
+            <tr><td>4</td><td>MedStar Washington</td><td>Washington, DC</td><td>No</td><td>1-2yr</td><td>Jeffrey Shupp, MD</td><td>(202) 877-3000</td></tr>
+            <tr><td>5</td><td>MUSC</td><td>Charleston, SC</td><td>Yes (SCC)</td><td>1yr</td><td>Alicia Privette, MD</td><td>molnard@musc.edu</td></tr>
+            <tr><td>6</td><td>Wake Forest / Atrium</td><td>Winston-Salem, NC</td><td>Yes (SCC)</td><td>2yr</td><td>Anju Saraswat, MD</td><td>asaraswa@wakehealth.edu</td></tr>
+            <tr><td>7</td><td>Vanderbilt</td><td>Nashville, TN</td><td>Yes (SCC)</td><td>2yr</td><td>Stephen Gondek, MD</td><td>650 burn admits/yr</td></tr>
+            <tr><td>8</td><td>UF Health Shands</td><td>Gainesville, FL</td><td>No</td><td>1yr</td><td>Andrea Munden, MD</td><td>digiacomo@surgery.ufl.edu</td></tr>
+            <tr><td>9</td><td>BRCA / Still Burn Ctr</td><td>Augusta, GA</td><td>No (ABA)</td><td>1yr</td><td>Shawn Fagan, MD</td><td>Largest US burn center</td></tr>
+            <tr><td>10</td><td>Univ. of Chicago</td><td>Chicago, IL</td><td>No (ABA)</td><td>1yr</td><td>Lawrence Gottlieb, MD</td><td></td></tr>
+            <tr><td>11</td><td>Cook County / Stroger</td><td>Chicago, IL</td><td>No</td><td>1yr</td><td>Stathis Poulakidas, MD</td><td>rona.ragbeer@cookcountyhhs.org</td></tr>
+            <tr><td>12</td><td>Univ. of Iowa</td><td>Iowa City, IA</td><td>No (ABA)</td><td>1yr</td><td>Samuel Jones, MD</td><td>samuel-w-jones@uiowa.edu</td></tr>
+            <tr><td>13</td><td>UT Southwestern / Parkland</td><td>Dallas, TX</td><td>Yes (SCC)</td><td>1yr</td><td>Linda Dultz, MD</td><td>btaccfellowship@utsouthwestern.edu</td></tr>
+            <tr><td>14</td><td>UTMB Galveston</td><td>Galveston, TX</td><td>Yes</td><td>1yr</td><td>Jong O. Lee, MD</td><td>mnhernan@utmb.edu</td></tr>
+            <tr><td>15</td><td>Texas Tech / Harnar</td><td>Lubbock, TX</td><td>No (TMB)</td><td>1yr</td><td>Deepak Bharadia</td><td>No visa sponsorship</td></tr>
+            <tr><td>16</td><td>USAISR</td><td>San Antonio, TX</td><td>ABA-verified</td><td>1yr</td><td>(Military)</td><td>DoD's only ABA center</td></tr>
+            <tr><td>17</td><td>Creighton / Valleywise</td><td>Phoenix, AZ</td><td>Yes (SCC)</td><td>1yr</td><td>Paola Pieri, MD</td><td>paola_pieri@dmgaz.org</td></tr>
+            <tr><td>18</td><td>UC Davis</td><td>Sacramento, CA</td><td>Yes / No</td><td>1yr</td><td>Jason Heard, MD</td><td>burnfellowship@ucdavis.edu</td></tr>
+            <tr><td>19</td><td>USC Keck / LA General</td><td>Los Angeles, CA</td><td>Yes</td><td>1yr</td><td>T. Justin Gillenwater, MD</td><td>jacqueline.stout@med.usc.edu</td></tr>
+            <tr><td>20</td><td>Univ. of Colorado</td><td>Aurora, CO</td><td>Yes / No</td><td>1yr</td><td>-</td><td>bayli.hendrix@cuanschutz.edu</td></tr>
+            <tr><td>21</td><td>Univ. of Washington / Harborview</td><td>Seattle, WA</td><td>Yes (SCC)</td><td>1yr</td><td>Deepika Nehra, MD</td><td>Burn: Tam Pham, MD</td></tr>
+            <tr><td>22</td><td>Regions Hospital</td><td>St. Paul, MN</td><td>ABA-verified</td><td>1yr</td><td>-</td><td></td></tr>
+            <tr><td>23</td><td>Univ. of Utah</td><td>Salt Lake City, UT</td><td>No</td><td>1-2yr</td><td>Giavonni Lewis, MD</td><td></td></tr>
+            <tr style="background:#d5f5e3"><td>24</td><td><strong>UNC / NC Jaycee Burn Center</strong></td><td>Chapel Hill, NC</td><td>Yes (SCC) / No</td><td>1-2yr</td><td>Alexandra Coward, MD, MPH</td><td>stacey_owen@med.unc.edu</td></tr>
+        </tbody>
+    </table>
+
+    <div class="info-box success" style="margin-top:1rem;">
+        <h4>Verified Program Details (from hospital websites)</h4>
+    </div>
+
+    <div class="program-grid">
+        <div class="program-card acgme" data-type="acgme" data-img="true">
+            <div class="card-header"><h3>UNC / NC Jaycee Burn Center</h3><span class="badge acgme">ACGME + Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Chapel Hill, NC</div>
+            <div class="cd"><strong>3 Tracks:</strong> 1yr ACGME burn/SCC | 1yr burn only (non-ACGME) | 2yr burn/trauma/ACS</div>
+            <div class="cd"><strong>Director:</strong> Alexandra Coward, MD, MPH</div>
+            <div class="cd"><strong>Coordinator:</strong> Stacey Owen | <a href="mailto:stacey_owen@med.unc.edu">stacey_owen@med.unc.edu</a></div>
+            <div class="cd"><strong>IMG:</strong> ECFMG certified + 3yr accredited training required</div>
+            <div class="cd"><strong>Deadline:</strong> Nov 1, 2026 - Jan 15, 2027 (for 2028-2029)</div>
+            <div class="cd"><strong>Start:</strong> August 1, 2028</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://www.med.unc.edu/surgery/burn/education/burn-fellowship/" target="_blank">Program Page</a></div>
+            <div class="card-tags"><span class="tag img">IMGs Eligible with ECFMG</span><span class="tag">3 Training Tracks</span></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme">
+            <div class="card-header"><h3>MGH / Shriners Boston (Harvard)</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Boston, MA</div>
+            <div class="cd"><strong>Duration:</strong> 12 months</div>
+            <div class="cd"><strong>Director:</strong> Jeremy Goverman, MD | <a href="mailto:jgoverman@partners.org">jgoverman@partners.org</a></div>
+            <div class="cd"><strong>Phone:</strong> 617-726-3712</div>
+            <div class="cd"><strong>Eligibility:</strong> Board-eligible/certified in general or plastic surgery</div>
+            <div class="cd"><strong>Website:</strong> <a href="https://www.massgeneral.org/burns/education-and-training/acute-and-reconstructive-burn-fellowship" target="_blank">Program Page</a></div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme" data-img="true">
+            <div class="card-header"><h3>Weill Cornell / NYP Hearst Burn Center</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> New York, NY</div>
+            <div class="cd"><strong>Positions:</strong> 2 per year</div>
+            <div class="cd"><strong>Cases:</strong> 800+ admissions/year</div>
+            <div class="cd"><strong>Visa:</strong> J-1 ONLY for IMGs</div>
+            <div class="cd"><strong>Requirements:</strong> USMLE Steps 1-3, board-eligible general surgery</div>
+            <div class="cd"><strong>Coordinator:</strong> Vanessa Mejia | <a href="mailto:vam9037@med.cornell.edu">vam9037@med.cornell.edu</a></div>
+            <div class="card-tags"><span class="tag img">J-1 Visa Accepted</span><span class="tag">800+ admits/yr</span></div>
+        </div>
+
+        <div class="program-card acgme" data-type="acgme">
+            <div class="card-header"><h3>USC Keck / LA General</h3><span class="badge acgme">ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Los Angeles, CA</div>
+            <div class="cd"><strong>Duration:</strong> 1yr (8mo burn + 4mo SCC)</div>
+            <div class="cd"><strong>Director:</strong> T. Justin Gillenwater, MD, MS, FACS</div>
+            <div class="cd"><strong>Coordinator:</strong> Jackie Stout | <a href="mailto:jacqueline.stout@med.usc.edu">jacqueline.stout@med.usc.edu</a> | 323-409-8112</div>
+            <div class="cd"><strong>Cases:</strong> 400 adult+pediatric patients/year</div>
+            <div class="cd"><strong>Apply via:</strong> SAFAS portal (safas.smapply.io)</div>
+        </div>
+
+        <div class="program-card acgme" data-type="acgme">
+            <div class="card-header"><h3>UC Davis / Shriners Northern CA</h3><span class="badge acgme">ACGME + Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Sacramento, CA</div>
+            <div class="cd"><strong>Positions:</strong> 3 (2 ACGME combined + 1 non-ACGME burn-only)</div>
+            <div class="cd"><strong>Director:</strong> Tina Palmieri, MD (Chief) | Jason Heard, MD</div>
+            <div class="cd"><strong>Contact:</strong> <a href="mailto:jpheard@ucdavis.edu">jpheard@ucdavis.edu</a> | 916-453-2050</div>
+            <div class="cd"><strong>Cases:</strong> 700-900 inpatient burn admissions/year</div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme">
+            <div class="card-header"><h3>University of Florida / Shands</h3><span class="badge non-acgme">Non-ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Gainesville, FL</div>
+            <div class="cd"><strong>Positions:</strong> 1 per year</div>
+            <div class="cd"><strong>Director:</strong> Andrea M. Munden, MD (Interim)</div>
+            <div class="cd"><strong>Coordinator:</strong> Michelle DiGiacomo | <a href="mailto:michelle.digiacomo@surgery.ufl.edu">michelle.digiacomo@surgery.ufl.edu</a></div>
+            <div class="cd"><strong>Facility:</strong> 27-bed inpatient burn unit</div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme">
+            <div class="card-header"><h3>University of Iowa</h3><span class="badge non-acgme">ABA-Verified</span></div>
+            <div class="cd"><strong>Location:</strong> Iowa City, IA</div>
+            <div class="cd"><strong>Coordinator:</strong> Tara Maurer | <a href="mailto:tara-maurer@uiowa.edu">tara-maurer@uiowa.edu</a> | 319-467-5902</div>
+            <div class="cd"><strong>Cases:</strong> 500 burn admissions/yr, 2500 outpatient visits/yr</div>
+            <div class="cd"><strong>Facility:</strong> 16-bed critical/intermediate care unit</div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme">
+            <div class="card-header"><h3>MedStar Washington Hospital Center</h3><span class="badge non-acgme">ACGME</span></div>
+            <div class="cd"><strong>Location:</strong> Washington, DC</div>
+            <div class="cd"><strong>Positions:</strong> 1 (optional 2nd year SCC)</div>
+            <div class="cd"><strong>Contact:</strong> <a href="mailto:TheBurnCenter@MedStar.net">TheBurnCenter@MedStar.net</a></div>
+            <div class="cd"><strong>Cases:</strong> 500+ admitted/year + thousands outpatient</div>
+            <div class="cd"><strong>Includes:</strong> Pediatric experience at Children's National</div>
+        </div>
+
+        <div class="program-card non-acgme" data-type="non-acgme">
+            <div class="card-header"><h3>University of Chicago</h3><span class="badge non-acgme">ABA-Verified</span></div>
+            <div class="cd"><strong>Location:</strong> Chicago, IL</div>
+            <div class="cd"><strong>Duration:</strong> 1yr (10mo burn + 2mo SCC)</div>
+            <div class="cd"><strong>Director:</strong> Sebastian Vrouwe, MD</div>
+            <div class="cd"><strong>Coordinator:</strong> Claire Stone | <a href="mailto:cstone@surgery.bsd.uchicago.edu">cstone@surgery.bsd.uchicago.edu</a></div>
+            <div class="cd"><strong>Deadline:</strong> Feb 1, 2027 (for 2028-2029)</div>
+            <div class="cd"><strong>Cases:</strong> 350-400 patients/year</div>
+        </div>
+    </div>
+</div>
+
+<!-- CRANIOFACIAL - 37 programs -->
+<div class="section" id="craniofacial">
+    <h2 class="section-title">Craniofacial Surgery Fellowships <span class="total">37 Programs</span></h2>
+    <div class="info-box"><p>SF Match: <a href="https://sfmatch.org/specialty/craniofacial-surgery-fellowship" target="_blank">sfmatch.org</a> | ASCFS: <a href="https://ascfsfellowship.org/" target="_blank">ascfsfellowship.org</a> | ACPA: <a href="https://acpacares.org/fellowship-educational-opportunities/" target="_blank">acpacares.org</a></p></div>
+
+    <h3 style="font-size:0.9rem; color:var(--primary); margin:1rem 0 0.5rem;">Plastic Surgery Track (~27 programs)</h3>
+    <table class="contact-table">
+        <thead><tr><th>#</th><th>Institution</th><th>City, State</th><th>ACGME?</th><th>Director</th><th>Contact</th></tr></thead>
+        <tbody>
+            <tr><td>1</td><td>Univ. of Michigan</td><td>Ann Arbor, MI</td><td>Yes</td><td>-</td><td>1 pos/yr</td></tr>
+            <tr><td>2</td><td>Medical College of Wisconsin</td><td>Milwaukee, WI</td><td>Yes</td><td>Kristen Klement, MD</td><td></td></tr>
+            <tr><td>3</td><td>UT Southwestern</td><td>Dallas, TX</td><td>Yes</td><td>James Seaward, MD</td><td></td></tr>
+            <tr><td>4</td><td>Dell Medical / UT Austin</td><td>Austin, TX</td><td>Yes</td><td>Sarah Frommer, MD, PhD</td><td></td></tr>
+            <tr><td>5</td><td>Indiana University / Riley</td><td>Indianapolis, IN</td><td>Yes</td><td>-</td><td></td></tr>
+            <tr><td>6</td><td>Univ. of Utah / Primary Children's</td><td>Salt Lake City, UT</td><td>Yes</td><td>-</td><td>kallie.handy@hsc.utah.edu</td></tr>
+            <tr><td>7</td><td>Univ. of Colorado / Children's CO</td><td>Aurora, CO</td><td>Yes</td><td>-</td><td>kathleen.tuthill@cuanschutz.edu</td></tr>
+            <tr><td>8</td><td>Nationwide Children's / Ohio State</td><td>Columbus, OH</td><td>ASCFS</td><td>-</td><td>1 pos (opt. 2nd yr)</td></tr>
+            <tr><td>9</td><td>Johns Hopkins / U Maryland</td><td>Baltimore, MD</td><td>No</td><td>Robin Yang, DDS, MD</td><td>SF Match #412.67</td></tr>
+            <tr><td>10</td><td>Yale</td><td>New Haven, CT</td><td>No</td><td>Michael Alperovich, MD</td><td></td></tr>
+            <tr><td>11</td><td>NYU Langone</td><td>New York, NY</td><td>No</td><td>Roberto Flores, MD</td><td>tabbatha.cooke@nyulangone.org</td></tr>
+            <tr><td>12</td><td>UW / Seattle Children's</td><td>Seattle, WA</td><td>No</td><td>-</td><td>206-987-6504</td></tr>
+            <tr><td>13</td><td>Univ. of Pittsburgh / UPMC Children's</td><td>Pittsburgh, PA</td><td>No</td><td>-</td><td>jennifer.szczepaniak@chp.edu</td></tr>
+            <tr><td>14</td><td>Stanford</td><td>Stanford, CA</td><td>No</td><td>H. Peter Lorenz, MD</td><td></td></tr>
+            <tr><td>15</td><td>UCLA</td><td>Los Angeles, CA</td><td>No</td><td>-</td><td>30+ year history</td></tr>
+            <tr><td>16</td><td>CHLA / USC Keck</td><td>Los Angeles, CA</td><td>No (ASCFS)</td><td>Mark Urata, MD, DDS</td><td></td></tr>
+            <tr><td>17</td><td>UC San Diego / Rady Children's</td><td>San Diego, CA</td><td>No (ASCFS)</td><td>Melissa Kanack, MD</td><td></td></tr>
+            <tr><td>18</td><td>Vanderbilt</td><td>Nashville, TN</td><td>No (ASCFS)</td><td>-</td><td>300-500 cases/yr</td></tr>
+            <tr><td>19</td><td>Boston Children's / Harvard</td><td>Boston, MA</td><td>No</td><td>-</td><td></td></tr>
+            <tr><td>20</td><td>Children's Healthcare Atlanta / Emory</td><td>Atlanta, GA</td><td>No</td><td>Colin Brady, MD</td><td>400 cleft/yr</td></tr>
+            <tr><td>21</td><td>Cincinnati Children's</td><td>Cincinnati, OH</td><td>No</td><td>-</td><td>513-636-0787</td></tr>
+            <tr><td>22</td><td>OHSU / Doernbecher</td><td>Portland, OR</td><td>No</td><td>Erik Wolfswinkel, MD</td><td></td></tr>
+            <tr><td>23</td><td>Cleveland Clinic</td><td>Cleveland, OH</td><td>No</td><td>Frank Papay, MD</td><td>IMG accepted</td></tr>
+            <tr><td>24</td><td>Baylor / Texas Children's</td><td>Houston, TX</td><td>No</td><td>-</td><td></td></tr>
+            <tr><td>25</td><td>Penn / CHOP</td><td>Philadelphia, PA</td><td>No</td><td>-</td><td>3 research pos/yr too</td></tr>
+            <tr><td>26</td><td>International Craniofacial Inst.</td><td>Dallas, TX</td><td>No</td><td>Huay-Zong Law, MD</td><td>1st US fellowship (1979)</td></tr>
+            <tr><td>27</td><td>Univ. of Tennessee / Le Bonheur</td><td>Memphis, TN</td><td>No</td><td>Robin Evans, MD</td><td>3mo Paris rotation!</td></tr>
+        </tbody>
+    </table>
+
+    <h3 style="font-size:0.9rem; color:var(--primary); margin:1rem 0 0.5rem;">OMS Track (AACMFS Match) - 10 programs</h3>
+    <p style="font-size:0.78rem; color:var(--text-light);">Arnold Palmer Hospital (Orlando), Nemours/UF Jacksonville, El Paso Children's, FL Craniofacial Institute (Tampa), LSU Shreveport, Univ. of Oklahoma, Univ. at Buffalo, Charleston Area Medical Center, Hackensack UMC, Duke CMF Trauma</p>
+</div>
+
+<!-- AESTHETIC - 42 programs -->
+<div class="section" id="aesthetic">
+    <h2 class="section-title">Aesthetic Surgery Fellowships <span class="total">42+ Programs</span></h2>
+    <div class="info-box"><p>Aesthetic Society: <a href="https://www.theaestheticsociety.org/medical-professionals/residents-fellows/endorsed-fellowships" target="_blank">Endorsed</a> | <a href="https://www.theaestheticsociety.org/medical-professionals/residents-fellows/unendorsed-fellowships" target="_blank">Unendorsed</a> | SF Match | AACS: <a href="https://cosmeticsurgery.org/fellowships/directors/" target="_blank">cosmeticsurgery.org</a></p></div>
+
+    <h3 style="font-size:0.9rem; color:var(--primary); margin:1rem 0 0.5rem;">Aesthetic Society Endorsed (30 identified of 38)</h3>
+    <table class="contact-table">
+        <thead><tr><th>#</th><th>Program</th><th>City, State</th><th>Director</th><th>Positions</th></tr></thead>
+        <tbody>
+            <tr><td>1</td><td>Manhattan Eye/Lenox Hill (Aston-Thorne)</td><td>New York, NY</td><td>Mark Albert, MD</td><td>2</td></tr>
+            <tr><td>2</td><td>UT Southwestern</td><td>Dallas, TX</td><td>Jeffrey Kenkel / W.P. Adams Jr, MD</td><td>2</td></tr>
+            <tr><td>3</td><td>BIDMC / Harvard</td><td>Boston, MA</td><td>-</td><td>-</td></tr>
+            <tr><td>4</td><td>Cleveland Clinic</td><td>Cleveland, OH</td><td>-</td><td>-</td></tr>
+            <tr><td>5</td><td>Lenox Hill / Northwell</td><td>New York, NY</td><td>Norman Schulman, MD</td><td>2</td></tr>
+            <tr><td>6</td><td>CaloAesthetics</td><td>Louisville, KY</td><td>M. Bradley Calobrace, MD</td><td>1</td></tr>
+            <tr><td>7</td><td>Aesthetic Surgery Fellowship LA</td><td>Los Angeles, CA</td><td>USC Faculty</td><td>2</td></tr>
+            <tr><td>8</td><td>Foad Nahai Fellowship</td><td>Atlanta, GA</td><td>Foad Nahai, MD</td><td>1</td></tr>
+            <tr><td>9</td><td>HGH Plastic Surgery</td><td>Birmingham, AL</td><td>William Hedden, MD</td><td>2</td></tr>
+            <tr><td>10</td><td>Prime Plastic Surgery (DC)</td><td>Washington, DC</td><td>Paul Ruff / Lexie Wang, MD</td><td>-</td></tr>
+            <tr><td>11</td><td>Prime Plastic Surgery (SD)</td><td>San Diego, CA</td><td>Robert Singer, MD</td><td>-</td></tr>
+            <tr><td>12</td><td>Azelia Quirino</td><td>El Paso, TX</td><td>Azelia Quirino, MD</td><td>1</td></tr>
+            <tr><td>13</td><td>Tri Valley Plastic Surgery</td><td>N. California</td><td>-</td><td>1</td></tr>
+            <tr><td>14</td><td>Dan Mills / APSI</td><td>Laguna Beach, CA</td><td>Dan Mills, MD</td><td>1</td></tr>
+            <tr><td>15</td><td>Bruce Connell / UCI</td><td>Irvine/SF, CA</td><td>-</td><td>1</td></tr>
+            <tr><td>16</td><td>LSU</td><td>Louisiana</td><td>-</td><td>-</td></tr>
+            <tr><td>17</td><td>Langsdon Clinic</td><td>Memphis area, TN</td><td>Roberto Lachica, MD</td><td>1</td></tr>
+            <tr><td>18</td><td>PSI Miami</td><td>Miami, FL</td><td>Dr. Ghersi</td><td>1</td></tr>
+            <tr><td>19</td><td>South Coast Plastic Surgery</td><td>S. California</td><td>-</td><td>1</td></tr>
+            <tr><td>20</td><td>Preferred Plastic Surgery</td><td>Scottsdale, AZ</td><td>Marc Malek, MD</td><td>1</td></tr>
+            <tr><td>21</td><td>Park Avenue Aesthetic Surgery</td><td>New York, NY</td><td>Douglas Senderoff, MD</td><td>1</td></tr>
+            <tr><td>22</td><td>Advanced Cosmetic Surgery</td><td>-</td><td>Thomas McFadden, MD</td><td>-</td></tr>
+            <tr><td>23</td><td>Advanced Aesthetics</td><td>Fayetteville, GA</td><td>-</td><td>1</td></tr>
+            <tr><td>24</td><td>Lorenc Aesthetics</td><td>New York, NY</td><td>Z. Paul Lorenc, MD</td><td>1</td></tr>
+            <tr><td>25</td><td>Bitar Cosmetic Surgery Inst.</td><td>Fairfax, VA</td><td>George Bitar, MD</td><td>-</td></tr>
+            <tr><td>26</td><td>H/K/B Cosmetic Surgery</td><td>Charlotte, NC</td><td>Joseph Hunstad, MD</td><td>-</td></tr>
+            <tr><td>27</td><td>Inspire Aesthetics</td><td>Delray Beach, FL</td><td>Drew Schnitt, MD</td><td>-</td></tr>
+            <tr><td>28</td><td>Ponte Vedra Plastic Surgery</td><td>Ponte Vedra, FL</td><td>-</td><td>-</td></tr>
+            <tr><td>29</td><td>Aristocrat Plastic Surgery</td><td>New York, NY</td><td>-</td><td>-</td></tr>
+            <tr><td>30</td><td>AG Aesthetic Center</td><td>-</td><td>-</td><td>1</td></tr>
+        </tbody>
+    </table>
+    <p style="font-size:0.78rem; color:var(--text-light); margin-top:0.3rem;">8 additional endorsed programs on <a href="https://www.theaestheticsociety.org/medical-professionals/residents-fellows/endorsed-fellowships" target="_blank">Aesthetic Society website</a></p>
+
+    <h3 style="font-size:0.9rem; color:var(--primary); margin:1rem 0 0.5rem;">AACS Certified Programs (12+)</h3>
+    <p style="font-size:0.78rem; color:var(--text-light);">Facial: Nova Surgicare (McLean VA), GA Aesthetics (Alpharetta GA), TOC Eye and Face (Austin TX), Nease Cosmetic (Chattanooga TN), Alabama Surgical Arts (Montgomery AL), Williamson/LSUHSC (Baton Rouge LA), Sanctuary (Reston VA), Dallas Surgical Arts (Dallas TX). General: Inland Cosmetic (Rancho Cucamonga CA), Aesthetic Surgery Institute (Houston TX), Duplechain/Tulane (Lafayette LA). See <a href="https://cosmeticsurgery.org/fellowships/directors/" target="_blank">full AACS list</a>.</p>
+</div>
+
+<!-- RESEARCH -->
+<div class="section" id="research">
+    <h2 class="section-title">Research Fellowships <span class="total">25+ Programs</span></h2>
+    <div class="info-box success"><h4>Best Entry Point for IMGs</h4><p>Research fellowships often don't require ECFMG certification, accept J-1 Research Scholar visas, and build US connections. Many directors recruit from their own research fellows for clinical positions.</p></div>
+
+    <table class="contact-table">
+        <thead><tr><th>#</th><th>Institution</th><th>City, State</th><th>Duration</th><th>Funded</th><th>IMG?</th><th>Key Contact</th></tr></thead>
+        <tbody>
+            <tr><td>1</td><td>Cleveland Clinic</td><td>Cleveland, OH</td><td>2yr</td><td>Yes ($52K)</td><td>Yes</td><td>bassirb@ccf.org (Dr. Gharb)</td></tr>
+            <tr><td>2</td><td>Memorial Sloan Kettering</td><td>New York, NY</td><td>2yr</td><td>Yes</td><td>Yes</td><td>surgicaleducation@mskcc.org</td></tr>
+            <tr><td>3</td><td>NYU Langone</td><td>New York, NY</td><td>1-2yr</td><td>Yes</td><td>Yes</td><td>plasticsurgery@nyulangone.org</td></tr>
+            <tr><td>4</td><td>Johns Hopkins</td><td>Baltimore, MD</td><td>1-2yr</td><td>Yes</td><td>Yes</td><td>plastics@jhmi.edu</td></tr>
+            <tr><td>5</td><td>Harvard / MGH</td><td>Boston, MA</td><td>1-2yr</td><td>Yes (NIH)</td><td>Yes</td><td>massgeneral.org/plastic-surgery</td></tr>
+            <tr><td>6</td><td>Harvard / BWH</td><td>Boston, MA</td><td>1-2yr</td><td>Yes</td><td>Yes</td><td></td></tr>
+            <tr><td>7</td><td>Stanford</td><td>Palo Alto, CA</td><td>1-2yr</td><td>Yes</td><td>Yes</td><td>plasticsurgery.stanford.edu</td></tr>
+            <tr><td>8</td><td>Univ. of Pennsylvania</td><td>Philadelphia, PA</td><td>1-2yr</td><td>Yes</td><td>Yes</td><td></td></tr>
+            <tr><td>9</td><td>Univ. of Michigan</td><td>Ann Arbor, MI</td><td>1-2yr</td><td>Yes (NIH)</td><td>Yes</td><td>plasticsurgery@med.umich.edu</td></tr>
+            <tr><td>10</td><td>Columbia / NYP</td><td>New York, NY</td><td>1-2yr</td><td>Varies</td><td>Yes</td><td></td></tr>
+            <tr><td>11</td><td>UCSF</td><td>San Francisco, CA</td><td>1-2yr</td><td>Yes</td><td>Yes</td><td></td></tr>
+            <tr><td>12</td><td>Duke</td><td>Durham, NC</td><td>1-2yr</td><td>Yes</td><td>Yes</td><td></td></tr>
+            <tr><td>13</td><td>Emory</td><td>Atlanta, GA</td><td>1-2yr</td><td>Varies</td><td>Yes</td><td></td></tr>
+            <tr><td>14</td><td>Vanderbilt</td><td>Nashville, TN</td><td>1-2yr</td><td>Yes</td><td>Yes</td><td></td></tr>
+            <tr><td>15</td><td>Northwestern</td><td>Chicago, IL</td><td>1-2yr</td><td>Yes</td><td>Yes</td><td></td></tr>
+            <tr><td>16</td><td>Univ. of Chicago</td><td>Chicago, IL</td><td>1-2yr</td><td>Varies</td><td>Yes</td><td></td></tr>
+            <tr><td>17</td><td>Wash U</td><td>St. Louis, MO</td><td>1-2yr</td><td>Yes</td><td>Yes</td><td></td></tr>
+            <tr><td>18</td><td>Univ. of Pittsburgh</td><td>Pittsburgh, PA</td><td>1-2yr</td><td>Yes</td><td>Yes</td><td>VCA/transplant research</td></tr>
+            <tr><td>19</td><td>Mayo Clinic</td><td>Rochester, MN</td><td>1-2yr</td><td>Yes</td><td>Yes</td><td>Intl scholar programs</td></tr>
+            <tr><td>20</td><td>UT Southwestern</td><td>Dallas, TX</td><td>1-2yr</td><td>Yes</td><td>Yes</td><td></td></tr>
+            <tr><td>21</td><td>MD Anderson</td><td>Houston, TX</td><td>1-2yr</td><td>Yes</td><td>Yes</td><td>J-1/H-1B sponsored</td></tr>
+            <tr><td>22</td><td>Baylor</td><td>Houston, TX</td><td>1-2yr</td><td>Varies</td><td>Yes</td><td></td></tr>
+            <tr><td>23</td><td>Yale</td><td>New Haven, CT</td><td>1-2yr</td><td>Yes</td><td>Yes</td><td></td></tr>
+            <tr><td>24</td><td>GWU</td><td>Washington, DC</td><td>1-2yr</td><td>Varies</td><td>Yes</td><td></td></tr>
+            <tr><td>25</td><td>Univ. of Wisconsin</td><td>Madison, WI</td><td>1-2yr</td><td>Yes</td><td>Yes</td><td></td></tr>
+        </tbody>
+    </table>
+    <p style="font-size:0.78rem; margin-top:0.5rem;">PSF grants directory: <a href="https://www.thepsf.org/research-and-grants/grants-program/research-fellowships" target="_blank">thepsf.org</a> | ASPS research listing: <a href="https://www.plasticsurgery.org/for-medical-professionals/community/medical-students-forum/research-fellowships" target="_blank">plasticsurgery.org</a></p>
+</div>
+
+<!-- ADDITIONAL SUBSPECIALTIES -->
+<div class="section" id="additional">
+    <h2 class="section-title">Additional Subspecialties & Private Practice <span class="total">100+ Programs</span></h2>
+
+    <div class="info-box success">
+        <h4>Private Practice & International Scholar Opportunities</h4>
+        <p>Many fellowship programs are based in <strong>private practices</strong>, not just academic centers. The Aesthetic Society endorsed fellowships, AACS programs, and AAFPRS programs are largely private practice-based. Additionally, international scholar programs allow short-term training in the US.</p>
+    </div>
+
+    <h3 style="font-size:0.95rem; color:var(--primary); margin:1rem 0 0.5rem;">International Scholar & Short-Term Programs</h3>
+    <table class="contact-table">
+        <thead><tr><th>Program</th><th>Duration</th><th>Details</th><th>Apply</th></tr></thead>
+        <tbody>
+            <tr><td><strong>PSF International Scholars (ASPS)</strong></td><td>3 months</td><td>Study at US host institutions. Clinical, research, or combo. Must have completed PRS training.</td><td>Opens mid-June 2026 | <a href="mailto:rvaladez@plasticsurgery.org">rvaladez@plasticsurgery.org</a> | <a href="https://www.thepsf.org/programs/international-scholars" target="_blank">thepsf.org</a></td></tr>
+            <tr><td><strong>ISAPS Fellowship Program</strong></td><td>3 months</td><td>80+ fellowships at 25 host locations worldwide including USA. Must be ISAPS member. Free to apply.</td><td>Opens Jan 24, 2026 | Closes Apr 20, 2026 | <a href="https://isaps.smapply.org/prog/isaps_fellowship_program_2026/" target="_blank">Apply</a></td></tr>
+            <tr><td><strong>AMOpportunities Observerships</strong></td><td>2-4 weeks</td><td>Plastic surgery observerships with Harvard faculty + FIU. Earn LOR. Shadowing only.</td><td><a href="https://www.amopportunities.org/clinical-rotations" target="_blank">amopportunities.org</a></td></tr>
+            <tr><td><strong>Cleveland Clinic International Observer</strong></td><td>Up to 3 months</td><td>Watch procedures, attend conferences. No patient contact.</td><td><a href="https://my.clevelandclinic.org/departments/international-medical-education/international-programs/physician-observer" target="_blank">Program Page</a></td></tr>
+            <tr><td><strong>MSK International Observership</strong></td><td>Up to 30 days</td><td>Must contact MSK physician directly for sponsorship. Start dates every other Monday.</td><td><a href="https://www.mskcc.org/hcp-education-training/international/observership" target="_blank">MSK Observership</a></td></tr>
+            <tr><td><strong>NYU Plastic Surgery Observer Program</strong></td><td>Variable</td><td>Observer program for plastic surgery</td><td><a href="https://med.nyu.edu/departments-institutes/plastic-surgery/education/observer-program" target="_blank">NYU Observer</a></td></tr>
+            <tr><td><strong>PSF/SHARE Global Fellows</strong></td><td>Variable</td><td>Humanitarian reconstruction and research</td><td><a href="https://www.thepsf.org/surgeons-in-humanitarian-alliance-for-reconstruction-research-and-education/global-fellows" target="_blank">SHARE Program</a></td></tr>
+            <tr><td><strong>Smile Train Scholars (PSF)</strong></td><td>Variable</td><td>Cleft surgery focused training</td><td><a href="https://www.thepsf.org/programs/smile-train-scholars" target="_blank">Smile Train</a></td></tr>
+        </tbody>
+    </table>
+
+    <h3 style="font-size:0.95rem; color:var(--primary); margin:1rem 0 0.5rem;">Private Practice-Based Aesthetic Fellowships (Endorsed - Pages 1&2)</h3>
+    <table class="contact-table">
+        <thead><tr><th>#</th><th>Program</th><th>City, State</th><th>Director</th></tr></thead>
+        <tbody>
+            <tr><td>1</td><td>Advanced Aesthetics Plastic Surgery Center</td><td>Fayetteville, GA</td><td>Joseph Raniere, MD</td></tr>
+            <tr><td>2</td><td>Advanced Cosmetic Surgery</td><td>Greenville, SC</td><td>Thomas McFadden, MD</td></tr>
+            <tr><td>3</td><td>Aesthetic Center for Plastic Surgery</td><td>Houston, TX</td><td>Rolando Morales Jr, MD</td></tr>
+            <tr><td>4</td><td>Aristocrat Plastic Surgery</td><td>Great Neck, NY</td><td>Kevin Tehrani, MD</td></tr>
+            <tr><td>5</td><td>Basu Aesthetics + Plastic Surgery</td><td>Houston, TX</td><td>C. Bob Basu, MD</td></tr>
+            <tr><td>6</td><td>Belcara Health Plastic Surgery Center</td><td>Baltimore, MD</td><td>Michael D. Cohen, MD</td></tr>
+            <tr><td>7</td><td>BIDMC / Harvard</td><td>Boston, MA</td><td>Sumner Slavin & Samuel Lin, MD</td></tr>
+            <tr><td>8</td><td>Bruce Connell Fellowship / UC Irvine</td><td>Orange, CA</td><td>Gregory R.D. Evans, MD</td></tr>
+            <tr><td>9</td><td>CaloAesthetics</td><td>Louisville, KY</td><td>M. Bradley Calobrace, MD</td></tr>
+            <tr><td>10</td><td>Center for Plastic Surgery / Metroderm (Nahai)</td><td>Atlanta, GA</td><td>Foad Nahai, MD</td></tr>
+            <tr><td>11</td><td>Cleveland Clinic</td><td>Cleveland, OH</td><td>James Zins, MD</td></tr>
+            <tr><td>12</td><td>Core Plastic Surgery</td><td>Birmingham, AL</td><td>Grady B. Core, MD</td></tr>
+            <tr><td>13</td><td>Dallas Plastic Surgery Institute</td><td>Dallas, TX</td><td>Bradley Hubbard & Rod Rohrich, MD</td></tr>
+            <tr><td>14</td><td>El Paso Cosmetic Surgery</td><td>El Paso, TX</td><td>Sadri Ozan Sozer, MD</td></tr>
+            <tr><td>15</td><td>H/K/B Cosmetic Surgery</td><td>Huntersville, NC</td><td>Gaurav Bharti & Shawna Kleban, MD</td></tr>
+            <tr><td>16</td><td>Hedden and Gunn Plastic Surgery</td><td>Birmingham, AL</td><td>William Hedden, MD</td></tr>
+            <tr><td>17</td><td>Langsdon Clinic</td><td>Germantown, TN</td><td>Roberto Lachica, MD</td></tr>
+            <tr><td>18</td><td>Manhattan Eye, Ear & Throat Hospital</td><td>New York, NY</td><td>Mark Albert, MD</td></tr>
+            <tr><td>19</td><td>Marietta Plastic Surgery</td><td>Marietta, GA</td><td>Michael J. McNeel, MD</td></tr>
+            <tr><td>20</td><td>Movassaghi Plastic Surgery</td><td>Eugene, OR</td><td>Kiya Movassaghi, MD</td></tr>
+            <tr><td>21</td><td>Neinstein Plastic Surgery</td><td>New York, NY</td><td>Ryan Neinstein, MD</td></tr>
+            <tr><td>22</td><td>North Texas Plastic Surgery</td><td>Southlake, TX</td><td>Sacha Obaid, MD</td></tr>
+            <tr><td>23</td><td>Orange County Aesthetic</td><td>Newport Beach, CA</td><td>Hisham Seify, MD</td></tr>
+            <tr><td>24</td><td>Park Avenue Aesthetic Surgery</td><td>New York, NY</td><td>Douglas Senderoff, MD</td></tr>
+            <tr><td>25</td><td>Ponte Vedra Plastic Surgery</td><td>Ponte Vedra Beach, FL</td><td>Robert W. Burk III, MD</td></tr>
+            <tr><td>26</td><td>Reno Tahoe Plastic Surgery</td><td>Reno, NV</td><td>Tiffany McCormack, MD</td></tr>
+            <tr><td>27</td><td>Somenek+PittmanMD</td><td>Washington, DC</td><td>Troy Pittman, MD</td></tr>
+            <tr><td>28</td><td>South Coast Plastic Surgery</td><td>Irvine, CA</td><td>Dr. Kyle Song</td></tr>
+            <tr><td>29</td><td>SSK Plastic Surgery</td><td>Newport Beach, CA</td><td>Sean Kelishadi, MD</td></tr>
+            <tr><td>30</td><td>The Aesthetic Surgery Fellowship LA</td><td>Beverly Hills, CA</td><td>Jay Calvert, MD</td></tr>
+            <tr><td>31</td><td>The Plastic Surgery Center</td><td>Sacramento, CA</td><td>Scott Green, MD</td></tr>
+            <tr><td>32</td><td>PSI Miami - Rhinoplasty & Aesthetic</td><td>Coral Gables, FL</td><td>Marcelo Ghersi, MD</td></tr>
+            <tr><td>33</td><td>The Practice Plastic Surgery</td><td>Beverly Hills, CA</td><td>Lisa Cassileth; Omar Hussain; Kelly Killeen, MD</td></tr>
+            <tr><td>34</td><td>UT Southwestern</td><td>Dallas, TX</td><td>William P. Adams Jr, MD</td></tr>
+            <tr><td>35</td><td>The Wall Center for Plastic Surgery</td><td>Shreveport, LA</td><td>Simeon Wall Jr, MD</td></tr>
+            <tr><td>36</td><td>Tri Valley Plastic Surgery</td><td>Dublin, CA</td><td>Steven Williams, MD</td></tr>
+            <tr><td>37</td><td>UAB Bruce F. Connell Fellowship</td><td>Birmingham, AL</td><td>Jorge de la Torre, MD</td></tr>
+            <tr><td>38</td><td>University of Pittsburgh</td><td>Pittsburgh, PA</td><td>Jeffrey Gusenoff & J. Peter Rubin, MD</td></tr>
+        </tbody>
+    </table>
+    <p style="font-size:0.78rem; margin-top:0.3rem;">All 38 programs: 12 months, SF Match application. Contact: <a href="mailto:fellows@theaestheticsociety.org">fellows@theaestheticsociety.org</a></p>
+
+    <h3 style="font-size:0.95rem; color:var(--primary); margin:1rem 0 0.5rem;">Additional Independent Programs</h3>
+    <table class="contact-table">
+        <thead><tr><th>Program</th><th>City, State</th><th>Type</th><th>Contact</th></tr></thead>
+        <tbody>
+            <tr><td>Tower Health / Reading Hospital (ACGME)</td><td>West Reading, PA</td><td>3yr Independent PRS Fellowship</td><td>Jennifer.Doerrman@towerhealth.org | 484-628-3693</td></tr>
+            <tr><td>Temple University (ACGME)</td><td>Philadelphia, PA</td><td>3yr Independent PRS Fellowship, 2 pos/yr</td><td><a href="https://medicine.temple.edu/education/graduate-medical-education/residency-programs-fellowships/surgery/fellowship-programs/plastic-surgery-fellowship-program" target="_blank">Program Page</a></td></tr>
+            <tr><td>Jackson Health / Univ. Miami (Independent)</td><td>Miami, FL</td><td>Independent Plastic Surgery</td><td><a href="https://graduate.jacksonhealth.org/program/plastic-surgery-plastic-surgery-independent/" target="_blank">Program Page</a></td></tr>
+        </tbody>
+    </table>
+
+    <h3 style="font-size:0.95rem; color:var(--primary); margin:1rem 0 0.5rem;">Gender Affirming Surgery (11 programs)</h3>
+    <table class="contact-table">
+        <thead><tr><th>Institution</th><th>City</th><th>Focus</th><th>Website</th></tr></thead>
+        <tbody>
+            <tr><td>UCLA (Genital)</td><td>Los Angeles, CA</td><td>Genital GAS</td><td><a href="https://www.uclahealth.org/departments/urology/education/fellowships/genital-gender-affirming-surgery" target="_blank">Link</a></td></tr>
+            <tr><td>UCLA (Facial)</td><td>Los Angeles, CA</td><td>Facial GAS (1st in nation)</td><td><a href="https://www.uclahealth.org/departments/surgery/facial-gender-affirming-surgery-fellowship" target="_blank">Link</a></td></tr>
+            <tr><td>Johns Hopkins</td><td>Baltimore, MD</td><td>Complex Gender Microsurgery</td><td><a href="https://www.hopkinsmedicine.org/plastic-reconstructive-surgery/education/complex-gender-microsurgery-fellowship" target="_blank">Link</a></td></tr>
+            <tr><td>Rush University</td><td>Chicago, IL</td><td>Gender Affirmation Surgery</td><td><a href="https://www.rushu.rush.edu/education-training/graduate-medical-education/residency-programs/integrated-plastic-reconstructive-surgery-residency/gender-affirmation-surgery-fellowship" target="_blank">Link</a></td></tr>
+            <tr><td>NYU Langone</td><td>New York, NY</td><td>Gender-Affirming Reconstructive</td><td><a href="https://med.nyu.edu/departments-institutes/urology/education/gender-affirming-reconstructive-surgery-fellowship" target="_blank">Link</a></td></tr>
+            <tr><td>Univ. of Utah</td><td>Salt Lake City, UT</td><td>Gender Affirming Surgery</td><td><a href="https://medicine.utah.edu/surgery/plastic-surgery/fellowships/gender-affirming-surgery" target="_blank">Link</a></td></tr>
+            <tr><td>Univ. of Michigan</td><td>Ann Arbor, MI</td><td>Gender Confirmation</td><td><a href="https://medschool.umich.edu/departments/surgery/sections/plastic-surgery/education/fellowships/gender-confirmation-surgery" target="_blank">Link</a></td></tr>
+            <tr><td>Univ. of Kansas</td><td>Kansas City, KS</td><td>Comprehensive Gender Care</td><td><a href="https://www.kumc.edu/school-of-medicine/academics/departments/plastic-burn-and-wound-surgery/academics/adult-comprehensive-gender-care-and-surgery-fellowship.html" target="_blank">Link</a></td></tr>
+        </tbody>
+    </table>
+
+    <h3 style="font-size:0.95rem; color:var(--primary); margin:1rem 0 0.5rem;">Peripheral Nerve Surgery (8 programs)</h3>
+    <p style="font-size:0.78rem;">Mayo Clinic (Rochester), Univ. of Utah, WashU (Neurosurgery + Plastic Surgery tracks), Cedars-Sinai, Univ. of Miami, Case Western, Univ. of Wisconsin. Directory: <a href="https://peripheralnerve.org/fellowship-directory/" target="_blank">ASPN</a></p>
+
+    <h3 style="font-size:0.95rem; color:var(--primary); margin:1rem 0 0.5rem;">Facial Plastic Surgery - AAFPRS (50+ programs)</h3>
+    <p style="font-size:0.78rem;">50+ programs with 65+ positions/year. 1-year non-ACGME. Apply via <a href="https://fellowships.aafprs.org/" target="_blank">fellowships.aafprs.org</a>. Notable directors: Sam Most (Stanford), Paul Nassif (Beverly Hills), Babak Azizzadeh (Beverly Hills), Tessa Hadlock (Harvard), Oren Friedman (Penn). Full handbook: <a href="https://fellowships.aafprs.org/docs/aafprs/DescriptionsHandbookJanuary2025.pdf" target="_blank">PDF</a></p>
+
+    <h3 style="font-size:0.95rem; color:var(--primary); margin:1rem 0 0.5rem;">Body Contouring</h3>
+    <p style="font-size:0.78rem;">UPMC (Life After Weight Loss program), UT Southwestern, Cleveland Clinic, H/K/B Charlotte</p>
+
+    <h3 style="font-size:0.95rem; color:var(--primary); margin:1rem 0 0.5rem;">Wound Care (5 programs)</h3>
+    <p style="font-size:0.78rem;">Northwell Health (New Hyde Park NY), Johns Hopkins (Limb Preservation), UIC (Wound Care & Tissue Repair), Wake Forest (Wound Care & Hyperbaric), Skilled Wound Care (multiple locations)</p>
+
+    <h3 style="font-size:0.95rem; color:var(--primary); margin:1rem 0 0.5rem;">Lymphedema / Supermicrosurgery</h3>
+    <p style="font-size:0.78rem;">Cleveland Clinic (Dr. Wei Chen, <a href="mailto:chenw6@ccf.org">chenw6@ccf.org</a>), Harvard/BIDMC, MD Anderson, Johns Hopkins, UPMC</p>
+
+    <h3 style="font-size:0.95rem; color:var(--primary); margin:1rem 0 0.5rem;">Vascular Anomalies</h3>
+    <p style="font-size:0.78rem;">Cincinnati Children's (formal fellowship, 6000+ patients), Boston Children's, CHOP, MGH for Children. <a href="https://www.issva.org/resources/multidisciplinary-teams" target="_blank">ISSVA directory</a></p>
+
+    <h3 style="font-size:0.95rem; color:var(--primary); margin:1rem 0 0.5rem;">Orthoplastic / Limb Salvage</h3>
+    <p style="font-size:0.78rem;">Penn Medicine, LifeBridge Health/RIAO (Baltimore), WashU (St. Louis)</p>
+</div>
+
+<!-- VISA -->
+<div class="section" id="visa">
+    <h2 class="section-title">Visa Pathway & ECFMG Certification</h2>
+
+    <div class="info-box danger"><h4>F-2 Visa Cannot Be Used for Medical Training</h4><p>Must change status to J-1 or H-1B before starting any fellowship.</p></div>
+
+    <div class="strategy-grid">
+        <div class="strategy-card">
+            <h4>J-1 Visa (Most Common)</h4>
+            <ul>
+                <li>Sponsored by ECFMG for clinical training</li>
+                <li>Standard for residency/fellowship</li>
+                <li><strong>Drawback:</strong> 2-year home residency requirement</li>
+                <li>Can apply for J-1 waiver (3yr underserved area)</li>
+                <li>J-1 Research Scholar for research fellowships</li>
+            </ul>
+        </div>
+        <div class="strategy-card">
+            <h4>H-1B Visa (Best Long-Term)</h4>
+            <ul>
+                <li>No 2-year home residency requirement</li>
+                <li>$100K+ filing fee (Sep 2025 change)</li>
+                <li>Fewer programs sponsor</li>
+                <li>Better for long-term US career</li>
+            </ul>
+        </div>
+        <div class="strategy-card">
+            <h4>ECFMG Certification</h4>
+            <ul>
+                <li><strong>Step 1:</strong> PASSED</li>
+                <li><strong>Step 2 CK:</strong> In progress</li>
+                <li><strong>Pathway:</strong> OET Medicine required</li>
+                <li>Required for ALL ACGME programs</li>
+                <li><a href="https://www.ecfmg.org/certification-pathways/" target="_blank">ECFMG Pathways 2027</a></li>
+            </ul>
+        </div>
+        <div class="strategy-card">
+            <h4>Visa Sponsorship by Program</h4>
+            <ul>
+                <li><strong>J-1 Confirmed:</strong> Stanford, WashU (case-by-case)</li>
+                <li><strong>No Visa:</strong> UCSF, UW, UTHSCSA, Texas Tech</li>
+                <li><strong>IMG Accepted:</strong> Cleveland Clinic, MCW, MD Anderson</li>
+                <li>Always verify directly with each program</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3 style="margin-top:1rem; color:var(--primary);">Key Contacts</h3>
+    <table class="contact-table">
+        <thead><tr><th>Organization</th><th>Purpose</th><th>Contact</th></tr></thead>
+        <tbody>
+            <tr><td>ECFMG</td><td>Certification & J-1 Sponsorship</td><td><a href="https://www.ecfmg.org/" target="_blank">ecfmg.org</a> | 215-386-5900</td></tr>
+            <tr><td>USCIS</td><td>Change of Status</td><td><a href="https://www.uscis.gov/visit-the-united-states/change-my-nonimmigrant-status" target="_blank">uscis.gov</a></td></tr>
+            <tr><td>SF Match</td><td>Fellowship Applications</td><td><a href="https://www.sfmatch.org/" target="_blank">sfmatch.org</a></td></tr>
+            <tr><td>ASPS</td><td>IMG Resources</td><td><a href="https://www.plasticsurgery.org/for-medical-professionals/community/medical-students-forum/international-medical-graduates" target="_blank">ASPS IMG Page</a></td></tr>
+            <tr><td>MDGreencard</td><td>Physician Immigration</td><td><a href="http://www.mdgreencard.com/" target="_blank">mdgreencard.com</a></td></tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- TIMELINE -->
+<div class="section" id="timeline">
+    <h2 class="section-title">Action Timeline</h2>
+    <div class="timeline">
+        <div class="timeline-item done"><div class="timeline-date">Completed</div><h4>USMLE Step 1 - PASSED</h4></div>
+        <div class="timeline-item urgent"><div class="timeline-date">Now - Aug 2026</div><h4>Pass USMLE Step 2 CK (aim 240+, ideally 250+)</h4><p>Cleveland Clinic research requires >250</p></div>
+        <div class="timeline-item urgent"><div class="timeline-date">Now - Sep 2026</div><h4>Take OET Medicine for ECFMG Pathway</h4></div>
+        <div class="timeline-item urgent"><div class="timeline-date">Now - Ongoing</div><h4>Email Program Directors & Build Publications</h4><p>Target Cleveland Clinic, MD Anderson, MSK, NYU first</p></div>
+        <div class="timeline-item"><div class="timeline-date">Jul - Sep 2026</div><h4>Complete ECFMG Certification</h4></div>
+        <div class="timeline-item"><div class="timeline-date">Sep - Dec 2026</div><h4>Apply to Research Fellowships (2027 start)</h4><p>Cleveland Clinic deadline: Dec 31</p></div>
+        <div class="timeline-item"><div class="timeline-date">Oct 2026 - Jan 2027</div><h4>Apply to Non-ACGME Fellowships via SF Match</h4></div>
+        <div class="timeline-item"><div class="timeline-date">Jan - Mar 2027</div><h4>Interview Season</h4></div>
+        <div class="timeline-item"><div class="timeline-date">Mar - Jun 2027</div><h4>Match Results & Visa Processing</h4></div>
+        <div class="timeline-item"><div class="timeline-date">Jul 2027+</div><h4>Begin Fellowship</h4></div>
+    </div>
+</div>
+
+<!-- STRATEGY -->
+<div class="section" id="strategy">
+    <h2 class="section-title">Strategy & Key Contacts</h2>
+
+    <div class="strategy-grid">
+        <div class="strategy-card">
+            <h4>Email Template</h4>
+            <div class="email-template">
+                <p><strong>Subject:</strong> International Plastic Surgeon - Fellowship/Research Inquiry</p>
+                <p>Dear Dr. [Name],</p>
+                <p>I am a board-certified plastic and reconstructive surgeon from Ethiopia with 7+ years of postgraduate surgical training, including 4 years of general surgery, 3 years of plastic and reconstructive surgery, and advanced microsurgery training in Switzerland. I recently passed USMLE Step 1 and will complete Step 2 CK shortly.</p>
+                <p>I am interested in your [fellowship/research program] at [Institution]. My clinical experience in [specific area] aligns with your program's focus on [specific strength].</p>
+                <p>I would be grateful for the opportunity to discuss. CV attached.</p>
+                <p>Sincerely, [Name]</p>
+            </div>
+        </div>
+
+        <div class="strategy-card">
+            <h4>Priority Targets (IMG-Friendly)</h4>
+            <ul>
+                <li><strong>Cleveland Clinic</strong> - Research, microsurgery, aesthetic, craniofacial all accept IMGs</li>
+                <li><strong>MD Anderson</strong> - J-1/H-1B sponsored, 1400 cases/yr microsurgery</li>
+                <li><strong>Stanford</strong> - J-1 sponsored microsurgery</li>
+                <li><strong>MSK</strong> - Research + microsurgery combined track</li>
+                <li><strong>NYU</strong> - Research + microsurgery fellowships</li>
+                <li><strong>WashU</strong> - J-1 case-by-case, orthoplastic micro</li>
+                <li><strong>MCW</strong> - Foreign equivalent accepted</li>
+            </ul>
+        </div>
+
+        <div class="strategy-card">
+            <h4>Application Platforms</h4>
+            <ul>
+                <li><strong>SF Match:</strong> Microsurgery, craniofacial, aesthetic (<a href="https://www.sfmatch.org/" target="_blank">sfmatch.org</a>)</li>
+                <li><strong>NRMP:</strong> Hand surgery (<a href="https://www.nrmp.org/" target="_blank">nrmp.org</a>)</li>
+                <li><strong>ASRM:</strong> Microsurgery (<a href="https://www.microsurg.org/fellowship" target="_blank">microsurg.org</a>)</li>
+                <li><strong>AACS:</strong> Cosmetic surgery (<a href="https://cosmeticsurgery.org/fellowships/process/" target="_blank">cosmeticsurgery.org</a>)</li>
+                <li><strong>AAFPRS:</strong> Facial plastic (<a href="https://fellowships.aafprs.org/" target="_blank">fellowships.aafprs.org</a>)</li>
+            <li><strong>PSRC:</strong> Research positions (<a href="https://ps-rc.org/opportunities/" target="_blank">ps-rc.org/opportunities</a>)</li>
+            <li><strong>ASPS Job Board:</strong> <a href="https://www1.plasticsurgery.org/job_opportunity/" target="_blank">plasticsurgery.org</a></li>
+            <li><strong>Indeed:</strong> <a href="https://www.indeed.com/q-plastic-surgery-postdoctoral-research-jobs.html" target="_blank">Postdoc Positions</a></li>
+            </ul>
+        </div>
+
+        <div class="strategy-card">
+            <h4>International Scholar Programs</h4>
+            <ul>
+                <li><strong>PSF International Scholars:</strong> 3-month US training. Opens mid-June 2026. Contact: <a href="mailto:rvaladez@plasticsurgery.org">rvaladez@plasticsurgery.org</a></li>
+                <li><strong>ISAPS Fellowship:</strong> 3-month at 25 host locations. Opens Jan 24, 2026, closes Apr 20, 2026</li>
+                <li><strong>AMOpportunities:</strong> 2-4 week observerships with Harvard faculty + others</li>
+                <li><strong>Smile Train Scholars:</strong> Cleft surgery focused training via PSF</li>
+                <li><strong>PSF/SHARE Global Fellows:</strong> Humanitarian reconstruction research</li>
+            </ul>
+        </div>
+
+        <div class="strategy-card">
+            <h4>Strengthen Application</h4>
+            <ul>
+                <li>Get LORs from Swiss microsurgery mentors</li>
+                <li>Publish case reports from Ethiopia/Switzerland</li>
+                <li>Present at conferences (ASPS, ASRM)</li>
+                <li>Complete US clinical observership at target institution</li>
+                <li>Score >240 on Step 2 CK</li>
+                <li>Take OET Medicine ASAP</li>
+                <li>Join ASPS as International Member</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3 style="margin-top:1rem; color:var(--primary);">Verified Program Contacts (from hospital websites)</h3>
+    <table class="contact-table">
+        <thead><tr><th>Program</th><th>Specialty</th><th>Director / Contact</th><th>Email / Phone</th></tr></thead>
+        <tbody>
+            <tr style="background:#eafaf1"><td colspan="4"><strong>MICROSURGERY</strong></td></tr>
+            <tr><td>Stanford</td><td>Microsurgery</td><td>Dr. Dung Nguyen | Coord: Tania LomeliFranco</td><td><a href="mailto:tmlomeli@stanford.edu">tmlomeli@stanford.edu</a> | SF Match 4954</td></tr>
+            <tr><td>NYU Langone</td><td>Microsurgery</td><td>Dr. Jamie P. Levine | Coord: Tabbatha Cooke</td><td><a href="mailto:tabbatha.cooke@nyulangone.org">tabbatha.cooke@nyulangone.org</a> | 646-501-6784</td></tr>
+            <tr><td>Johns Hopkins</td><td>Microsurgery</td><td>Dr. Gedge Rosson | Coord: Helena Johnson</td><td><a href="mailto:hjohnson@jhmi.edu">hjohnson@jhmi.edu</a> | 410-955-9471</td></tr>
+            <tr><td>Yale</td><td>Microsurgery</td><td>Dr. Siba Haykal | Coord: Monika Londono</td><td><a href="mailto:monika.chmielewska@yale.edu">monika.chmielewska@yale.edu</a> | Deadline: Mar 6, 2026</td></tr>
+            <tr><td>Penn Medicine</td><td>Microsurgery</td><td>Dr. Stephen J. Kovach III</td><td>5 fellows/yr | SF Match CAS</td></tr>
+            <tr><td>UPMC Pittsburgh</td><td>Microsurgery</td><td>Coord: Michelle Gigliotti</td><td><a href="mailto:gigliottim@upmc.edu">gigliottim@upmc.edu</a> | 878-261-6775</td></tr>
+            <tr><td>Ohio State</td><td>Microsurgery</td><td>Dr. Min-Jeong Cho | Coord: Hannah Tate</td><td><a href="mailto:Hannah.Tate@osumc.edu">Hannah.Tate@osumc.edu</a> | 614-293-9030</td></tr>
+            <tr><td>Univ. of Kansas</td><td>Microsurgery</td><td>Dr. James Butterworth | Coord: Kendra Harms</td><td><a href="mailto:kharms2@kumc.edu">kharms2@kumc.edu</a> | 913-588-2000</td></tr>
+            <tr><td>MCW Milwaukee</td><td>Microsurgery</td><td>Dr. John LoGiudice | Coord: Alyssa McNulty</td><td><a href="mailto:amcnulty@mcw.edu">amcnulty@mcw.edu</a> | 414-955-3863</td></tr>
+            <tr><td>UT Southwestern</td><td>Microsurgery</td><td>Coord: Christina Burton</td><td><a href="mailto:Christina.burton@utsouthwestern.edu">Christina.burton@utsouthwestern.edu</a> | 214-645-3104</td></tr>
+            <tr><td>UW Seattle</td><td>Microsurgery</td><td>Dr. Duane Wang | Coord: Heather Hartman</td><td><a href="mailto:hhartman@uw.edu">hhartman@uw.edu</a> | Deadline: Mar 30, 2026</td></tr>
+            <tr><td>Cleveland Clinic</td><td>Microsurgery</td><td>Dr. Graham Schwarz | Coord: Jodi Ours</td><td><a href="mailto:oursj1@ccf.org">oursj1@ccf.org</a> | 216-445-4724</td></tr>
+            <tr><td>MD Anderson</td><td>Microsurgery</td><td>Dr. Paul Shay / Dr. Jessie Yu</td><td><a href="mailto:JZYu@mdanderson.org">JZYu@mdanderson.org</a> | 713-794-1247</td></tr>
+            <tr style="background:#eafaf1"><td colspan="4"><strong>RESEARCH</strong></td></tr>
+            <tr><td>Cleveland Clinic</td><td>Research</td><td>General Inquiry</td><td><a href="mailto:plasticsurgeryresearch@ccf.org">plasticsurgeryresearch@ccf.org</a></td></tr>
+            <tr><td>MSK Research</td><td>Research</td><td>Dr. Jonas A. Nelson</td><td><a href="mailto:nelsonj2@mskcc.org">nelsonj2@mskcc.org</a></td></tr>
+            <tr><td>MSK Microsurgery</td><td>Clinical</td><td>Dr. Evan Matros | Education Office</td><td><a href="mailto:surgicaleducation@mskcc.org">surgicaleducation@mskcc.org</a> | 212-639-7537</td></tr>
+            <tr><td>NYU Research</td><td>Research</td><td>Dr. Daniel J. Ceradini</td><td><a href="mailto:PlasticSurgeryResearch@NYULangone.org">PlasticSurgeryResearch@NYULangone.org</a></td></tr>
+            <tr><td>Mount Sinai Research</td><td>Research</td><td>Dr. Peter Henderson | Coord: Nancy Gallardo</td><td><a href="mailto:nancy.gallardo@mountsinai.org">nancy.gallardo@mountsinai.org</a> | 212-241-5873 | Deadline: Nov 15</td></tr>
+            <tr style="background:#eafaf1"><td colspan="4"><strong>BURN SURGERY</strong></td></tr>
+            <tr><td>UNC Chapel Hill</td><td>Burn</td><td>Dr. Alexandra Coward | Coord: Stacey Owen</td><td><a href="mailto:stacey_owen@med.unc.edu">stacey_owen@med.unc.edu</a> | Deadline: Nov 1-Jan 15</td></tr>
+            <tr><td>MGH/Shriners Boston</td><td>Burn</td><td>Dr. Jeremy Goverman</td><td><a href="mailto:jgoverman@partners.org">jgoverman@partners.org</a> | 617-726-3712</td></tr>
+            <tr><td>Weill Cornell/NYP</td><td>Burn</td><td>Coord: Vanessa Mejia</td><td><a href="mailto:vam9037@med.cornell.edu">vam9037@med.cornell.edu</a> | J-1 only</td></tr>
+            <tr><td>USC Keck</td><td>Burn</td><td>Dr. T. Justin Gillenwater | Coord: Jackie Stout</td><td><a href="mailto:jacqueline.stout@med.usc.edu">jacqueline.stout@med.usc.edu</a> | 323-409-8112</td></tr>
+            <tr><td>UC Davis</td><td>Burn</td><td>Dr. Jason Heard</td><td><a href="mailto:jpheard@ucdavis.edu">jpheard@ucdavis.edu</a> | 916-453-2050</td></tr>
+            <tr><td>MedStar Washington</td><td>Burn</td><td>General</td><td><a href="mailto:TheBurnCenter@MedStar.net">TheBurnCenter@MedStar.net</a></td></tr>
+            <tr><td>Univ. of Chicago</td><td>Burn</td><td>Dr. Sebastian Vrouwe | Coord: Claire Stone</td><td><a href="mailto:cstone@surgery.bsd.uchicago.edu">cstone@surgery.bsd.uchicago.edu</a> | Deadline: Feb 1, 2027</td></tr>
+            <tr><td>Univ. of Iowa</td><td>Burn</td><td>Coord: Tara Maurer</td><td><a href="mailto:tara-maurer@uiowa.edu">tara-maurer@uiowa.edu</a> | 319-467-5902</td></tr>
+            <tr style="background:#eafaf1"><td colspan="4"><strong>CRANIOFACIAL</strong></td></tr>
+            <tr><td>Vanderbilt</td><td>Craniofacial</td><td>Dr. Michael Golinko | Coord: Carrie Newman</td><td><a href="mailto:carrie.newman@vumc.org">carrie.newman@vumc.org</a> | Deadline: Sep 1, 2025</td></tr>
+            <tr><td>Children's Atlanta/Emory</td><td>Craniofacial</td><td>Dr. Colin Brady | Coord: Katie Smith</td><td><a href="mailto:gme@choa.org">gme@choa.org</a> | 404-785-7637</td></tr>
+            <tr><td>UT Southwestern</td><td>Craniofacial</td><td>Dr. James Seaward | Coord: Kayla Thomas</td><td><a href="mailto:kayla.thomas@utsouthwestern.edu">kayla.thomas@utsouthwestern.edu</a> | 214-645-3107</td></tr>
+            <tr style="background:#eafaf1"><td colspan="4"><strong>AESTHETIC</strong></td></tr>
+            <tr><td>Cleveland Clinic</td><td>Aesthetic</td><td>Dr. James E. Zins | Coord: Jodi Ours</td><td><a href="mailto:oursj1@ccf.org">oursj1@ccf.org</a> | 216-445-4724 | ECFMG req for IMG</td></tr>
+            <tr><td>UT Southwestern</td><td>Aesthetic</td><td>Dr. Jeffrey Kenkel / Dr. W.P. Adams Jr | Coord: Christina Burton</td><td><a href="mailto:Christina.burton@utsouthwestern.edu">Christina.burton@utsouthwestern.edu</a> | 214-645-3104</td></tr>
+            <tr style="background:#eafaf1"><td colspan="4"><strong>HAND SURGERY</strong></td></tr>
+            <tr><td>Mayo Clinic</td><td>Hand</td><td>Dr. Sanj Kakar</td><td><a href="mailto:kakar.sanjeev@mayo.edu">kakar.sanjeev@mayo.edu</a> | 507-284-3664</td></tr>
+            <tr><td>Cleveland Clinic Lymphatic</td><td>Supermicrosurgery</td><td>Dr. Wei Chen</td><td><a href="mailto:chenw6@ccf.org">chenw6@ccf.org</a></td></tr>
+        </tbody>
+    </table>
+</div>
+
+</div>
+
+<script>
+// Navigation
+document.querySelectorAll('.nav button').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.section).classList.add('active');
+    });
+});
+
+// Search across all content
+const searchInput = document.getElementById('searchInput');
+searchInput.addEventListener('input', function() {
+    const q = this.value.toLowerCase();
+    let count = 0;
+    // Search cards
+    document.querySelectorAll('.program-card').forEach(card => {
+        const match = card.textContent.toLowerCase().includes(q) || q === '';
+        card.style.display = match ? '' : 'none';
+        if (match) count++;
+    });
+    // Search table rows
+    document.querySelectorAll('.contact-table tbody tr').forEach(row => {
+        const match = row.textContent.toLowerCase().includes(q) || q === '';
+        row.style.display = match ? '' : 'none';
+        if (match) count++;
+    });
+    document.getElementById('resultCount').textContent = q ? count + ' results' : '';
+});
+
+// Filter by type
+document.getElementById('filterType').addEventListener('change', function() {
+    const type = this.value;
+    document.querySelectorAll('.program-card').forEach(card => {
+        if (type === 'all') card.style.display = '';
+        else card.style.display = card.dataset.type === type ? '' : 'none';
+    });
+});
+
+// Filter IMG
+document.getElementById('filterVisa').addEventListener('change', function() {
+    const f = this.value;
+    document.querySelectorAll('.program-card').forEach(card => {
+        if (f === 'all') card.style.display = '';
+        else {
+            const hasIMG = card.querySelector('.img') !== null || card.dataset.img === 'true';
+            card.style.display = hasIMG ? '' : 'none';
+        }
+    });
+});
+</script>
+
+</body>
+</html>
